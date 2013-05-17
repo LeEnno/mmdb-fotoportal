@@ -1,4 +1,11 @@
 MmdbFotoportal::Application.routes.draw do
+
+  root :to => 'home#index'
+  
+  match '/login' => 'user#login', :as => :login
+  match '/register' => 'user#register', :as => :register
+  match '/logout' => 'user#logout', :as => :logout
+
   # The priority is based upon order of creation:
   # first created -> highest priority.
 
