@@ -1,2 +1,14 @@
 <h1>User#login</h1>
 <p>Find me in app/views/user/login.html.erb</p>
+
+<%= form_tag do %>
+  <%= label(:user, :email, 'Email-Adresse') %>
+  <%= email_field(:user, :email) %>
+  <br />
+
+  <%= label(:user, :password, 'Passwort') %>
+  <%= password_field(:user, :password) %>
+  <br />
+
+  <%= submit_tag('Einloggen') %>
+<% end %>
