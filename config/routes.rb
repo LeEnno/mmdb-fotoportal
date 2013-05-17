@@ -1,12 +1,18 @@
 MmdbFotoportal::Application.routes.draw do
 
+  get "photo/upload"
+
+  get "photo/edit"
+
   root :to => 'home#index'
   
   match '/login' => 'user#login', :as => :login
   match '/register' => 'user#register', :as => :register
   match '/logout' => 'user#logout', :as => :logout
 
-  match '/gallery' => 'gallery#index', :as => :gallery
+  match '/gallery' => 'gallery#show_folder', :as => :gallery
+
+  match '/upload' => 'photo#upload', :as => :upload
 
   # The priority is based upon order of creation:
   # first created -> highest priority.

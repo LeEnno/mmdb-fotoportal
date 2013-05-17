@@ -4,9 +4,6 @@ class GalleryController < ApplicationController
   def search
   end
 
-  def index
-  end
-
   def show_folder
   end
 
