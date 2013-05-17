@@ -1,22 +1,25 @@
 class UserController < ApplicationController
   def login
-    if !params[:user].blank?
-      params[:user].reject!{ |key, val| key == "password_confirmation" }
-      
-      @user = User.new(params[:user])
-      if @user.valid?
-        @user.save
-        # redirect somewhere
-      end
-
-      puts "huhu"
-      puts @user.errors.inspect
-    end
+    
   end
 
   def register
+    if !params[:user].blank?
+      @user = User.new(params[:user])
+
+      if @user.valid?
+        @user.save
+        create_session_and_redirect
+      end
+    end
   end
 
   def logout
+  end
+
+  private
+  def create_session_and_redirect
+    session[:id] = Session.create(:user => @user).id
+    redirect_to gallery_path
   end
 end

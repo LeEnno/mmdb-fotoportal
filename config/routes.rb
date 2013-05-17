@@ -6,6 +6,8 @@ MmdbFotoportal::Application.routes.draw do
   match '/register' => 'user#register', :as => :register
   match '/logout' => 'user#logout', :as => :logout
 
+  match '/gallery' => 'gallery#index', :as => :gallery
+
   # The priority is based upon order of creation:
   # first created -> highest priority.
 

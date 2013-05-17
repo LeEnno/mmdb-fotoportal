@@ -1,7 +1,14 @@
 <h1>Home#index</h1>
 <p>Find me in app/views/home/index.html.erb</p>
 
-<ul>
-  <li><a href="<%= login_path %>">Login</a></li>
-  <li><a href="<%= register_path %>">Registrieren</a></li>
-</ul>
+
+<% if @is_logged_in %>
+  <p>Du bist bereits, eingloggt, klicke <%= link_to 'hier', gallery_path %> um in deine Galerie zu gelangen</p>
+
+<% else %>
+  <ul>
+    <li><a href="<%= login_path %>">Login</a></li>
+    <li><a href="<%= register_path %>">Registrieren</a></li>
+  </ul>
+
+<% end -%>
