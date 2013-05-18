@@ -33,27 +33,30 @@ class Picture < ActiveRecord::Base
 
     # ImageMagick
     require 'RMagick'
-    img         = Magick::Image::read(image_path).first
+    img              = Magick::Image::read(image_path).first
+    format           = img.format
     self.width       = img.columns
     self.height      = img.rows
     self.filesize    = img.filesize
     self.color_depth = img.depth
 
     # exif
-    exif_data = EXIFR::JPEG.new(image_path)
-    if exif_data.exif?
-      self.camera        = exif_data.model unless exif_data.model.nil?
-      self.taken_at      = exif_data.date_time unless exif_data.date_time.nil?
-      self.exposure_time = exif_data.exposure_time.to_f unless exif_data.exposure_time.nil? # must be int
-      self.aperture      = exif_data.f_number.to_s unless exif_data.f_number.nil? # TODO must be string
-      self.latitude      = exif_data.gps.latitude unless exif_data.gps.nil?
-      self.longitude     = exif_data.gps.longitude unless exif_data.gps.nil?
-      # TODO location with Google-API
+    if format == 'JPEG'
+      exif_data = EXIFR::JPEG.new(image_path)
+      if exif_data.exif?
+        self.camera        = exif_data.model unless exif_data.model.nil?
+        self.taken_at      = exif_data.date_time unless exif_data.date_time.nil?
+        self.exposure_time = exif_data.exposure_time.to_f unless exif_data.exposure_time.nil? # must be int
+        self.aperture      = exif_data.f_number.to_s unless exif_data.f_number.nil? # TODO must be string
+        self.latitude      = exif_data.gps.latitude unless exif_data.gps.nil?
+        self.longitude     = exif_data.gps.longitude unless exif_data.gps.nil?
+        # TODO location with Google-API
 
-      self.iso          = exif_data.iso_speed_ratings if exif_data.respond_to?('iso_speed_ratings')
-      self.color_space  = exif_data.color_space.to_s if exif_data.respond_to?('color_space')
-      self.focal_length = exif_data.focal_length.to_f if exif_data.respond_to?('focal_length')
-      self.has_flash    = !!(exif_data.respond_to?('flash') && exif_data.flash)
+        self.iso          = exif_data.iso_speed_ratings if exif_data.respond_to?('iso_speed_ratings')
+        self.color_space  = exif_data.color_space.to_s if exif_data.respond_to?('color_space')
+        self.focal_length = exif_data.focal_length.to_f if exif_data.respond_to?('focal_length')
+        self.has_flash    = !!exif_data.flash if exif_data.respond_to?('flash')
+      end
     end
 
     # TODO color means by David
