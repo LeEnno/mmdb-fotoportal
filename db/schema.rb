@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130510203916) do
+ActiveRecord::Schema.define(:version => 20130518132238) do
 
   create_table "appearances", :id => false, :force => true do |t|
     t.integer "picture_id", :null => false
@@ -46,17 +46,17 @@ ActiveRecord::Schema.define(:version => 20130510203916) do
   create_table "pictures", :force => true do |t|
     t.string   "title",         :null => false
     t.string   "camera"
-    t.string   "hash",          :null => false
+    t.string   "path_hash",     :null => false
     t.integer  "width",         :null => false
     t.integer  "height",        :null => false
     t.integer  "filesize",      :null => false
     t.string   "location"
     t.float    "longitude"
-    t.float    "altitude"
-    t.integer  "exposure_time"
+    t.float    "latitude"
+    t.float    "exposure_time"
     t.integer  "iso"
     t.string   "aperture"
-    t.integer  "focal_length"
+    t.float    "focal_length"
     t.string   "color_space"
     t.integer  "color_depth"
     t.boolean  "has_flash"
@@ -75,6 +75,7 @@ ActiveRecord::Schema.define(:version => 20130510203916) do
     t.integer  "folder_id",     :null => false
     t.datetime "created_at",    :null => false
     t.datetime "updated_at",    :null => false
+    t.string   "filename"
   end
 
   add_index "pictures", ["folder_id"], :name => "index_pictures_on_folder_id"

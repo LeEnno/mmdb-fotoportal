@@ -1,5 +1,5 @@
 class Folder < ActiveRecord::Base
-  attr_accessible :name
+  attr_accessible :name, :user
 
   belongs_to :user
   belongs_to :parent, :class_name => 'Folder'

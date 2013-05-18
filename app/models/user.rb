@@ -1,5 +1,5 @@
 class User < ActiveRecord::Base
-  attr_accessible :email, :firstname, :password, :password_confirmation, :surname
+  attr_accessible :email, :firstname, :folders, :password, :password_confirmation, :surname
 
   has_many :sessions
   has_many :folders
@@ -7,4 +7,12 @@ class User < ActiveRecord::Base
 
   validates_presence_of :firstname, :surname, :email, :password, :password_confirmation
   validates_confirmation_of :password
+
+
+  # PUBLIC METHODS
+  # ----------------------------------------------------------------------------
+  
+  def root_folder
+    folders.where('parent_id IS NULL').first
+  end
 end

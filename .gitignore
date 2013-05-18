@@ -17,3 +17,6 @@
 # src files
 .idea
 .DS_Store
+
+# uploads
+/public/uploads/*

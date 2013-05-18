@@ -2,6 +2,7 @@ class UserController < ApplicationController
 
   before_filter :redirect_if_authenticated, :only => [:login, :register]
   
+
   def login
     return if params[:user].blank?
 
@@ -24,6 +25,7 @@ class UserController < ApplicationController
 
     if @user.valid?
       @user.save
+      Folder.create(:user => @user)
       create_session_and_redirect
     end
   end
