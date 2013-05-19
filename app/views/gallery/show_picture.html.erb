@@ -1,2 +1,18 @@
 <h1>Gallery#show_picture</h1>
 <p>Find me in app/views/gallery/show_picture.html.erb</p>
+
+<ul>
+  <li>Titel: <%= @picture.title || '–' %></li>
+  <li>Breite: <%= @picture.width || '–' %></li> <%# TODO px #%>
+  <li>Höhe: <%= @picture.height || '–' %></li> <%# TODO px #%>
+  <li>Dateigröße: <%= @picture.filesize || '–' %></li> <%# TODO MB #%>
+  <li>Kameramodell: <%= @picture.camera || '–' %></li>
+  <li>Aufnahmeort: <%= @picture.location || '–' %></li>
+  <li>Belichtungszeit: <%= @picture.exposure_time || '–' %></li> <%# TODO s #%>
+  <li>Iso: <%= @picture.iso || '–' %></li>
+  <li>Blende: <%= @picture.aperture || '–' %></li>
+  <li>Brennweite: <%= @picture.focal_length || '–' %></li> <%# TODO mm #%>
+  <li>Farbtiefe: <%= @picture.color_depth || '–' %></li> <%# TODO Bit #%>
+  <li>Farbraum: <%= @picture.color_space || '–' %></li> <%# TODO decoden #%>
+  <li>Blitz: <%= @picture.has_flash.nil? ? '–' : (@picture.has_flash ? 'an' : 'aus') %></li>
+</ul>
