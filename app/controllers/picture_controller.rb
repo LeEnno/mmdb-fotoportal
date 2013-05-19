@@ -1,4 +1,4 @@
-class PhotoController < ApplicationController
+class PictureController < ApplicationController
 
   def upload
     file_contents = params[:file]
@@ -13,7 +13,7 @@ class PhotoController < ApplicationController
       @picture.save
     end
 
-    render :text => 1
+    render :json => {:permalink => picture_url(:picture_id => @picture.id)}
   end
 
 

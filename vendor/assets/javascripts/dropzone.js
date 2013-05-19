@@ -535,7 +535,8 @@ require.register("dropzone/lib/dropzone.js", function(exports, require, module){
         return file.previewElement.querySelector("[data-dz-uploadprogress]").style.width = "" + progress + "%";
       },
       sending: noop,
-      success: function(file) {
+      success: function(file, responseText) {
+        $(file.previewElement).trigger('dzUploadSuccess', responseText.permalink);
         return file.previewElement.classList.add("dz-success");
       },
       complete: noop,
