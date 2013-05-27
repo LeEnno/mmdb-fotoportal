@@ -1,6 +1,8 @@
 <h1>Gallery#show_picture</h1>
 <p>Find me in app/views/gallery/show_picture.html.erb</p>
 
+<%= image_tag @picture.file_url('medium'), :width => 300, :class => 'do-facedetect' %>
+
 <ul>
   <li>Titel: <%= @picture.title || '–' %></li>
   <li>Breite: <%= @picture.width || '–' %></li> <%# TODO px #%>

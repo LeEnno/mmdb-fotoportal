@@ -9,7 +9,10 @@ MmdbFotoportal::Application.routes.draw do
 
   match '/pictures' => 'gallery#show_folder', :as => :gallery
 
-  match '/:picture_id' => 'gallery#show_picture', :as => :picture
+  match '/:picture_id' => 'gallery#show_picture', :as => :picture, 
+        :constraints => { :picture_id => /\d+/ }
+
+  match '/detect' => 'home#test_detection'
 
   # The priority is based upon order of creation:
   # first created -> highest priority.

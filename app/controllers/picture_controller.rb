@@ -6,7 +6,7 @@ class PictureController < ApplicationController
     
     # wb = write binary, to avoid encoding conversion errors
     # see http://stackoverflow.com/questions/10177674/how-do-i-embed-an-uploaded-binary-files-ascii-8bit-in-an-xml-utf-8#answer-11683990
-    File.open(@picture.file_path, 'wb') do |file|
+    File.open(@picture.file_path('original'), 'wb') do |file|
       file.write(file_contents.read)
       @picture.extract_metadata
       @picture.folder = @user.root_folder

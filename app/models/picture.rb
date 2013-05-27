@@ -6,30 +6,33 @@ class Picture < ActiveRecord::Base
   has_and_belongs_to_many :keywords
 
   after_initialize :set_location_fields, :if => :new_record?
+  after_create     :make_scales
 
 
   # CONSTANTS
   # ----------------------------------------------------------------------------
   
-  FILE_NAME_BASE = 'original'
+  FILE_NAME_ORIG   = {:name => 'original'}
+  FILE_NAME_MEDIUM = {:name => 'medium',    :x => 640, :y => 480}
+  FILE_NAME_THUMB  = {:name => 'thumbnail', :x => 100, :y => 100}
 
 
   # PUBLIC METHODS
   # ----------------------------------------------------------------------------
   
-  def file_path(include_filename = true)
-    Rails.root.join(
-      'public',
-      'uploads',
-      path_hash.gsub(/([\w\d]{30})(\w|\d)(\w|\d)/, '\1/\2/\3'), # converts '123456' to '1234/5/6'
-      include_filename ? filename : ''
-    )
+  def file_path(scale = nil)
+    Rails.root.join('public', file_path_from_public(scale))
+  end
+
+
+  def file_url(scale = nil)
+    '/' + file_path_from_public(scale)
   end
 
 
   # extract data from ImageMagick and EXIF-data
   def extract_metadata
-    image_path = file_path.to_s
+    image_path = file_path('original').to_s
 
     # ImageMagick
     require 'RMagick'
@@ -74,11 +77,58 @@ class Picture < ActiveRecord::Base
       self.path_hash = Digest::MD5.hexdigest((Time.now.to_i + rand(1..99)).to_s)
     end while Picture.find_by_path_hash(self.path_hash)
 
+    # fetch extension
+    self.extension = title.gsub(/.*\.(\w+)$/, '\1')
+
     # create directory for image
     require 'fileutils'
-    FileUtils.mkpath(file_path(false)) 
+    FileUtils.mkpath(file_path)
+  end
 
-    # replace original filename by our FILE_NAME_BASE
-    self.filename = title.gsub(/.*\.(\w+)$/, FILE_NAME_BASE + '.\1')
+
+  def file_path_from_public(scale)
+    [
+      'uploads',
+      path_hash.gsub(/([\w\d]{30})(\w|\d)(\w|\d)/, '\1/\2/\3'), # converts '123456' to '1234/5/6'
+      scale_to_filename(scale)
+    ].join('/')
+  end
+
+
+  def scale_to_filename(scale)
+    return '' if scale.nil?
+
+    filename = ''
+
+    case scale
+      when 'thumb'
+        filename = FILE_NAME_THUMB[:name]
+      when 'medium'
+        filename = FILE_NAME_MEDIUM[:name]
+      when 'original'
+        filename = FILE_NAME_ORIG[:name]
+      else
+        raise "invalid scale param: #{scale}"
+    end
+
+    filename + "." + extension
+  end
+
+
+  def make_scales
+    require 'RMagick'
+    im_orig = Magick::Image::read(file_path('original')).first
+
+    target_directory = file_path
+
+    im_thumb = im_orig.resize_to_fill(FILE_NAME_THUMB[:x], FILE_NAME_THUMB[:y])
+    im_thumb.write(target_directory.join(FILE_NAME_THUMB[:name] + '.' + extension))
+
+    if im_orig.columns > FILE_NAME_MEDIUM[:x] || im_orig.rows > FILE_NAME_MEDIUM[:y]
+      im_medium = im_orig.resize_to_fit(FILE_NAME_MEDIUM[:x], FILE_NAME_MEDIUM[:y])
+    else
+      im_medium = im_orig
+    end
+    im_medium.write(target_directory.join(FILE_NAME_MEDIUM[:name] + '.' + extension))
   end
 end

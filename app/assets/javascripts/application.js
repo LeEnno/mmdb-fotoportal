@@ -12,4 +12,6 @@
 //
 //= require jquery
 //= require dropzone
+//= require ccv
+//= require face
 //= require_tree .
