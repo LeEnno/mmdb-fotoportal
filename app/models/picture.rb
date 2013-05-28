@@ -89,7 +89,7 @@ class Picture < ActiveRecord::Base
   def file_path_from_public(scale)
     [
       'uploads',
-      path_hash.gsub(/([\w\d]{30})(\w|\d)(\w|\d)/, '\1/\2/\3'), # converts '123456' to '1234/5/6'
+      path_hash.gsub(/(\w|\d)(\w|\d)([\w\d]{30})/, '\1/\2/\3'), # converts '123456' to '1/2/3456'
       scale_to_filename(scale)
     ].join('/')
   end
@@ -111,7 +111,7 @@ class Picture < ActiveRecord::Base
         raise "invalid scale param: #{scale}"
     end
 
-    filename + "." + extension
+    filename + '.' + extension
   end
 
 
