@@ -3,16 +3,16 @@ class Session < ActiveRecord::Base
 
   belongs_to :user
 
-  before_create :set_expiration
+  before_create :_set_expiration
 
-  SESSION_LENGTH = 30
+  SESSION_LENGTH = 60
 
   def refresh
-    set_expiration
+    _set_expiration
   end
 
   private
-  def set_expiration
+  def _set_expiration
     self.expires_at = Time.now + SESSION_LENGTH.minutes
   end
 end

@@ -1,20 +1,30 @@
 <h1>Gallery#show_picture</h1>
 <p>Find me in app/views/gallery/show_picture.html.erb</p>
 
-<%= image_tag @picture.file_url('medium'), :width => 300, :class => 'do-facedetect' %>
+<%= form_tag edit_picture_path(:picture_id => @picture.id),
+             :method => :post,
+             :id => 'form-picture-edit',
+             :remote => true do %>
 
-<ul>
-  <li>Titel: <%= @picture.title || '–' %></li>
-  <li>Breite: <%= @picture.width || '–' %></li> <%# TODO px #%>
-  <li>Höhe: <%= @picture.height || '–' %></li> <%# TODO px #%>
-  <li>Dateigröße: <%= @picture.filesize || '–' %></li> <%# TODO MB #%>
-  <li>Kameramodell: <%= @picture.camera || '–' %></li>
-  <li>Aufnahmeort: <%= @picture.location || '–' %></li>
-  <li>Belichtungszeit: <%= @picture.exposure_time || '–' %></li> <%# TODO s #%>
-  <li>Iso: <%= @picture.iso || '–' %></li>
-  <li>Blende: <%= @picture.aperture || '–' %></li>
-  <li>Brennweite: <%= @picture.focal_length || '–' %></li> <%# TODO mm #%>
-  <li>Farbtiefe: <%= @picture.color_depth || '–' %></li> <%# TODO Bit #%>
-  <li>Farbraum: <%= @picture.color_space || '–' %></li> <%# TODO decoden #%>
-  <li>Blitz: <%= @picture.has_flash.nil? ? '–' : (@picture.has_flash ? 'an' : 'aus') %></li>
-</ul>
+  <%= hidden_field :picture, :id %>
+
+  <%= image_tag @picture.file_url('medium'), :width => 300, :class => (@picture.facedetect? ? 'do-facedetect' : '') %>
+
+  <ul>
+    <li>Titel: <%= @picture.title || '–' %></li>
+    <li>Breite: <%= @picture.width || '–' %></li> <%# TODO px #%>
+    <li>Höhe: <%= @picture.height || '–' %></li> <%# TODO px #%>
+    <li>Dateigröße: <%= @picture.filesize || '–' %></li> <%# TODO MB #%>
+    <li>Kameramodell: <%= @picture.camera || '–' %></li>
+    <li>Aufnahmeort: <%= @picture.location || '–' %></li>
+    <li>Belichtungszeit: <%= @picture.exposure_time || '–' %></li> <%# TODO s #%>
+    <li>Iso: <%= @picture.iso || '–' %></li>
+    <li>Blende: <%= @picture.aperture || '–' %></li>
+    <li>Brennweite: <%= @picture.focal_length || '–' %></li> <%# TODO mm #%>
+    <li>Farbtiefe: <%= @picture.color_depth || '–' %></li> <%# TODO Bit #%>
+    <li>Farbraum: <%= @picture.color_space || '–' %></li> <%# TODO decoden #%>
+    <li>Blitz: <%= @picture.has_flash.nil? ? '–' : (@picture.has_flash ? 'an' : 'aus') %></li>
+    <li>Gesichter: <%= text_field_tag 'picture[persons]', @picture.persons_as_string %></li>
+  </ul>
+
+<% end %>

@@ -2,11 +2,11 @@ class Picture < ActiveRecord::Base
   attr_accessible :aperture, :camera, :color_depth, :color_space, :exposure_time, :filename, :filesize, :focal_length, :folder, :has_flash, :height, :iso, :latitude, :location, :longitude, :mean_black, :mean_blue, :mean_brown, :mean_cyan, :mean_green, :mean_magenta, :mean_orange, :mean_red, :mean_violet, :mean_white, :mean_yellow, :path_hash, :taken_at, :title, :width
 
   belongs_to :folder
-  has_and_belongs_to_many :persons
+  has_and_belongs_to_many :persons, :join_table => 'appearances'
   has_and_belongs_to_many :keywords
 
-  after_initialize :set_location_fields, :if => :new_record?
-  after_create     :make_scales
+  after_initialize :_set_location_fields, :if => :new_record?
+  after_create     :_make_scales
 
 
   # CONSTANTS
@@ -21,12 +21,12 @@ class Picture < ActiveRecord::Base
   # ----------------------------------------------------------------------------
   
   def file_path(scale = nil)
-    Rails.root.join('public', file_path_from_public(scale))
+    Rails.root.join('public', _file_path_from_public(scale))
   end
 
 
   def file_url(scale = nil)
-    '/' + file_path_from_public(scale)
+    '/' + _file_path_from_public(scale)
   end
 
 
@@ -47,18 +47,19 @@ class Picture < ActiveRecord::Base
     if format == 'JPEG'
       exif_data = EXIFR::JPEG.new(image_path)
       if exif_data.exif?
-        self.camera        = exif_data.model unless exif_data.model.nil?
-        self.taken_at      = exif_data.date_time unless exif_data.date_time.nil?
+        self.camera        = exif_data.model              unless exif_data.model.nil?
+        self.taken_at      = exif_data.date_time          unless exif_data.date_time.nil?
         self.exposure_time = exif_data.exposure_time.to_f unless exif_data.exposure_time.nil? # must be int
-        self.aperture      = exif_data.f_number.to_s unless exif_data.f_number.nil? # TODO must be string
-        self.latitude      = exif_data.gps.latitude unless exif_data.gps.nil?
-        self.longitude     = exif_data.gps.longitude unless exif_data.gps.nil?
+        self.aperture      = exif_data.f_number.to_s      unless exif_data.f_number.nil? # must be string
+
+        self.latitude      = exif_data.gps.latitude       unless exif_data.gps.nil?
+        self.longitude     = exif_data.gps.longitude      unless exif_data.gps.nil?
         # TODO location with Google-API
 
-        self.iso          = exif_data.iso_speed_ratings if exif_data.respond_to?('iso_speed_ratings')
-        self.color_space  = exif_data.color_space.to_s if exif_data.respond_to?('color_space')
-        self.focal_length = exif_data.focal_length.to_f if exif_data.respond_to?('focal_length')
-        self.has_flash    = !!exif_data.flash if exif_data.respond_to?('flash')
+        self.iso          = exif_data.iso_speed_ratings   if exif_data.respond_to?('iso_speed_ratings')
+        self.color_space  = exif_data.color_space.to_s    if exif_data.respond_to?('color_space')
+        self.focal_length = exif_data.focal_length.to_f   if exif_data.respond_to?('focal_length')
+        self.has_flash    = !!exif_data.flash             if exif_data.respond_to?('flash')
       end
     end
 
@@ -66,11 +67,27 @@ class Picture < ActiveRecord::Base
   end
 
 
+  # get all persons in printable format
+  def persons_as_string
+    persons.pluck(:name).join(', ')
+  end
+
+
+  # do we have to detect faces or did we already do that in the past?
+  # 
+  # We assume that faces have already been detected if the picture has been
+  # updated with metadata (like faces, folders or keywords) after creation.
+  # 
+  def facedetect?
+    self.persons.count === 0 && self.updated_at == self.created_at
+  end
+
+
   # PRIVATE METHODS
   # ----------------------------------------------------------------------------
   private
 
-  def set_location_fields
+  def _set_location_fields
     # set hash in db
     require 'digest/md5'
     begin
@@ -86,16 +103,16 @@ class Picture < ActiveRecord::Base
   end
 
 
-  def file_path_from_public(scale)
+  def _file_path_from_public(scale)
     [
       'uploads',
       path_hash.gsub(/(\w|\d)(\w|\d)([\w\d]{30})/, '\1/\2/\3'), # converts '123456' to '1/2/3456'
-      scale_to_filename(scale)
+      _scale_to_filename(scale)
     ].join('/')
   end
 
 
-  def scale_to_filename(scale)
+  def _scale_to_filename(scale)
     return '' if scale.nil?
 
     filename = ''
@@ -115,7 +132,7 @@ class Picture < ActiveRecord::Base
   end
 
 
-  def make_scales
+  def _make_scales
     require 'RMagick'
     im_orig = Magick::Image::read(file_path('original')).first
 

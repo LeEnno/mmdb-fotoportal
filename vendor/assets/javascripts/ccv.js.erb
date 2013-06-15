@@ -77,15 +77,23 @@ function get_named_arguments(params, names) {
 }
 
 var ccv = {
-	pre : function (image) {
+	pre : function (image, removeImage) {
 		if (image.tagName.toLowerCase() == "img") {
 			var canvas = document.createElement("canvas");
-			document.body.appendChild(image);
+
+			removeImage = removeImage || false;
+
+			if (removeImage)
+				document.body.appendChild(image);
+
 			canvas.width = image.offsetWidth;
 			canvas.style.width = image.offsetWidth.toString() + "px";
 			canvas.height = image.offsetHeight;
 			canvas.style.height = image.offsetHeight.toString() + "px";
-			document.body.removeChild(image);
+
+			if (removeImage)
+				document.body.removeChild(image);
+
 			var ctx = canvas.getContext("2d");
 			ctx.drawImage(image, 0, 0);
 			return canvas;
@@ -170,7 +178,8 @@ var ccv = {
 		return {"index" : idx, "cat" : class_idx};
 	},
 
-	detect_objects : parallable("ccv.js", function (canvas, cascade, interval, min_neighbors) {
+	// detect_objects : parallable("ccv.js", function (canvas, cascade, interval, min_neighbors) {
+	detect_objects : parallable("<%= asset_path('ccv') %>", function (canvas, cascade, interval, min_neighbors) {
 		if (this.shared !== undefined) {
 			var params = get_named_arguments(arguments, ["canvas", "cascade", "interval", "min_neighbors"]);
 			this.shared.canvas = params.canvas;
