@@ -1,5 +1,8 @@
 class PictureController < ApplicationController
 
+  # SAVE UPLOADED IMAGE
+  # ----------------------------------------------------------------------------
+  # 
   def upload
     file_contents = params[:file]
     @picture      = Picture.new(:title => file_contents.original_filename)
@@ -17,7 +20,8 @@ class PictureController < ApplicationController
   end
 
 
-  # Edit persons, folders and keywords via AJAX
+  # EDIT PERSONS, FOLDERS AND KEYWORDS VIA AJAX
+  # ----------------------------------------------------------------------------
   # 
   # params[:picture][:person] is array
   # params[:picture][:persons] is string with comma-separated values
@@ -49,6 +53,8 @@ class PictureController < ApplicationController
     @picture.updated_at = Time.now
     @picture.save
 
+    # return faces as printable string
+    # TODO folders, keywords
     render :json => {
       :persons => @picture.persons_as_string
     }
