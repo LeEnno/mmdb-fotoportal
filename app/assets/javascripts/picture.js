@@ -1,24 +1,47 @@
 $(function() {
 
+  var $pictureForm = $('#form-picture-edit');
+
   // INIT FACE DETECTION
   // ---------------------------------------------------------------------------
   var image = $('.do-facedetect').get(0);
-  image.onload = function () {
-    detectNewImage(image, true);
-  };
+  if (typeof image != 'undefined') {
+    image.onload = function () {
+      detectNewImage(image, true);
+    };
+  }
 
 
-  // HANDLE AJAX RESPONSE AFTER SUBMITTING FORM
+  // EVENT LISTENER FOR FORM AND ITS INPUTS
   // ---------------------------------------------------------------------------
-  $('#form-picture-edit').on('ajax:success', function(evt, data, status, xhr) {
-    console.log("data:", data);
+
+  // handle ajax response
+  $pictureForm.on('ajax:success', function(evt, data, status, xhr) {
+
+    // set faces input to returned value
+    $('#picture_persons').val(data.persons);
+
+    // if user typed a person's name, remove input and the detected area
+    $('.input-face-detection').each(function(i, el) {
+      var $this = $(this);
+      if ($.trim($this.val()) !== '') {
+        $this.add($this.data('detectedArea')).fadeOut(function() {
+          $(this).remove();
+        });
+      }
+    });
+
 
   // blur input and submit form on enter (dunno why doesn't automatically)
   }).on('keydown', 'input', function(e) {
       if (e.keyCode == 13) { // 13 = Enter key
         $(this).blur();
-        $('#form-picture-edit').submit();
+        $pictureForm.submit();
       }
+
+  // submit form on folder change
+  }).on('change', 'select', function() {
+    $pictureForm.submit();
   });
 });
 
@@ -26,7 +49,7 @@ $(function() {
 // EXECUTE FACE DETECTION AND INSERT INPUT FOR FOUND FACES
 // -----------------------------------------------------------------------------
 function detectNewImage(image, async) {
-  
+
   // callback after face was found
   function post(comp) {
     console.log('stopped');
@@ -47,8 +70,11 @@ function detectNewImage(image, async) {
         id:    'picture_person_' + i,
         class: 'input-face-detection'
 
+      // assign input to detectedArea
+      }).data('detectedArea', $detectedArea)
+
       // position next to found face
-      }).appendTo($detectedArea).css({
+      .appendTo($detectedArea).css({
         top:  comp[i].height / 2 - 10,
         left: comp[i].width
       });

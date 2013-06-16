@@ -33,8 +33,9 @@ class PictureController < ApplicationController
     p_names = params[:picture][:person] || []
     p_names = p_names + params[:picture][:persons].split(',') if params[:picture][:persons].present?
 
-    # find or create person and add it to out picture
+    # find or create person and add it to our picture
     p_names.map!{ |p_name| p_name.strip }.each do |p_name|
+      next if p_name.empty?
       p = Person.find_or_create_by_name(p_name)
       @picture.persons << p if !@picture.persons.pluck(:name).include?(p_name)
     end
@@ -44,17 +45,50 @@ class PictureController < ApplicationController
       if p.name.in?(p_names)
         false
       else
-        p.delete # not only delete from join-table but also from persons-table itself
+        # not only delete from join-table but also from persons-table itself if
+        # it doesn't belong to any other persons
+        p.delete if p.pictures.count == 1
         true
       end
     end
+
+
+    # find or create keyword and add it to our picture
+    k_names = []
+    k_names = k_names + params[:picture][:keywords].split(',') if params[:picture][:keywords].present?
+    k_names.map!{ |k_name| k_name.strip }.each do |k_name|
+      next if k_name.empty?
+      k = Keyword.find_or_create_by_name(k_name)
+      @picture.keywords << k if !@picture.keywords.pluck(:name).include?(k_name)
+    end
+
+    # delete persons that have been removed from input field
+    @picture.keywords = @picture.keywords.reject do |k|
+      if k.name.in?(k_names)
+        false
+      else
+        # not only delete from join-table but also from keywords-table itself if
+        # it doesn't belong to any other persons
+        k.delete if k.pictures.count == 1
+        true
+      end
+    end
+
+
+    # save folder
+    @picture.folder = Folder.find(params[:picture][:folder])
+
 
     # save changes
     @picture.updated_at = Time.now
     @picture.save
 
     # return faces as printable string
-    # TODO folders, keywords
+    # 
+    # We only return the faces, because the keywords are a single input and the
+    # value is likely to remain the same as at the time of submitting the form.
+    # Same applies to the folder.
+    # 
     render :json => {
       :persons => @picture.persons_as_string
     }

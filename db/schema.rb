@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130527101645) do
+ActiveRecord::Schema.define(:version => 20130616110946) do
 
   create_table "appearances", :id => false, :force => true do |t|
     t.integer "picture_id", :null => false
@@ -36,6 +36,13 @@ ActiveRecord::Schema.define(:version => 20130527101645) do
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
   end
+
+  create_table "keywords_pictures", :id => false, :force => true do |t|
+    t.integer "picture_id", :null => false
+    t.integer "keyword_id", :null => false
+  end
+
+  add_index "keywords_pictures", ["picture_id", "keyword_id"], :name => "index_pictures_keywords_on_picture_id_and_keyword_id"
 
   create_table "persons", :force => true do |t|
     t.string   "name",       :null => false
@@ -79,13 +86,6 @@ ActiveRecord::Schema.define(:version => 20130527101645) do
   end
 
   add_index "pictures", ["folder_id"], :name => "index_pictures_on_folder_id"
-
-  create_table "pictures_keywords", :id => false, :force => true do |t|
-    t.integer "picture_id", :null => false
-    t.integer "keyword_id", :null => false
-  end
-
-  add_index "pictures_keywords", ["picture_id", "keyword_id"], :name => "index_pictures_keywords_on_picture_id_and_keyword_id"
 
   create_table "sessions", :force => true do |t|
     t.datetime "expires_at"

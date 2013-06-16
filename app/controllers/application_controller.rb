@@ -15,7 +15,7 @@ class ApplicationController < ActionController::Base
     if @is_logged_in.nil?
       @is_logged_in = false
 
-      if !session[:id].blank? && Session.exists?(session[:id])
+      if session[:id].present? && Session.exists?(session[:id])
         sess = Session.find(session[:id])
         if sess.expires_at > Time.now
           sess.refresh

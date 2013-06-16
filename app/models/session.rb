@@ -9,6 +9,7 @@ class Session < ActiveRecord::Base
 
   def refresh
     _set_expiration
+    save
   end
 
   private

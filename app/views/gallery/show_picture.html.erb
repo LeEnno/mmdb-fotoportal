@@ -8,7 +8,9 @@
 
   <%= hidden_field :picture, :id %>
 
-  <%= image_tag @picture.file_url('medium'), :width => 300, :class => (@picture.facedetect? ? 'do-facedetect' : '') %>
+  <%= image_tag @picture.file_url('medium'),
+                :width => 300,
+                :class => (@picture.facedetect? ? 'do-facedetect' : '') %>
 
   <ul>
     <li>Titel: <%= @picture.title || '–' %></li>
@@ -24,7 +26,17 @@
     <li>Farbtiefe: <%= @picture.color_depth || '–' %></li> <%# TODO Bit #%>
     <li>Farbraum: <%= @picture.color_space || '–' %></li> <%# TODO decoden #%>
     <li>Blitz: <%= @picture.has_flash.nil? ? '–' : (@picture.has_flash ? 'an' : 'aus') %></li>
-    <li>Gesichter: <%= text_field_tag 'picture[persons]', @picture.persons_as_string %></li>
+    <li>Gesichter: <%= text_field_tag 'picture[persons]',
+                                      @picture.persons_as_string %></li>
+    <li>Keywords: <%= text_field_tag 'picture[keywords]',
+                                     @picture.keywords_as_string %></li>
+    <li>Ordner: <%= select_tag 'picture[folder]',
+                                options_from_collection_for_select(
+                                  @user.folders,
+                                  'id',
+                                  'name',
+                                  @picture.folder.id # selected
+                                ) %></li>
   </ul>
 
 <% end %>

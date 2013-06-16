@@ -4,6 +4,8 @@ class Picture < ActiveRecord::Base
   belongs_to :folder
   has_and_belongs_to_many :persons, :join_table => 'appearances'
   has_and_belongs_to_many :keywords
+  # should semantically be `belongs_to`, but `:through` wouldn't work
+  has_one :user, :through => :folder
 
   after_initialize :_set_location_fields, :if => :new_record?
   after_create     :_make_scales
@@ -70,6 +72,12 @@ class Picture < ActiveRecord::Base
   # get all persons in printable format
   def persons_as_string
     persons.pluck(:name).join(', ')
+  end
+
+
+  # get all keywords in printable format
+  def keywords_as_string
+    keywords.pluck(:name).join(', ')
   end
 
 
