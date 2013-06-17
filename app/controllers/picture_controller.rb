@@ -46,7 +46,7 @@ class PictureController < ApplicationController
         false
       else
         # not only delete from join-table but also from persons-table itself if
-        # it doesn't belong to any other persons
+        # it doesn't belong to any other pictures
         p.delete if p.pictures.count == 1
         true
       end
@@ -68,18 +68,15 @@ class PictureController < ApplicationController
         false
       else
         # not only delete from join-table but also from keywords-table itself if
-        # it doesn't belong to any other persons
+        # it doesn't belong to any other pictures
         k.delete if k.pictures.count == 1
         true
       end
     end
 
 
-    # save folder
-    @picture.folder = Folder.find(params[:picture][:folder])
-
-
-    # save changes
+    # save folder and changes
+    @picture.folder     = Folder.find(params[:picture][:folder])
     @picture.updated_at = Time.now
     @picture.save
 
