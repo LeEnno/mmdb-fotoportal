@@ -42,6 +42,22 @@ $(function() {
   // submit form on folder change
   }).on('change', 'select', function() {
     $pictureForm.submit();
+
+  // init autocomplete for faces
+  }).on('focus', '#picture_persons, .input-face-detection', function(e) {
+    $(this).typeahead({
+      source: getTypeaheadSrc(),
+      matcher: function (item) {
+        var query = this.query.replace(/.*(, ?(.*))/, '$2');
+        return ~item.toLowerCase().indexOf(query.toLowerCase());
+      },
+      updater: function (item) {
+        var val = this.$element.val();
+        if (val.indexOf(',') < 0)
+          return item;
+        return val.replace(/(.+),.*/, '$1, ' + item);
+      }
+    });
   });
 });
 
@@ -100,4 +116,19 @@ function detectNewImage(image, async) {
       "min_neighbors": 1 });
     post(comp);
   }
+}
+
+
+// TYPEAHEAD SOURCE
+// -----------------------------------------------------------------------------
+var typeaheadSrc;
+function getTypeaheadSrc() {
+  if (typeof typeahead != 'undefined')
+    return typeaheadSrc;
+
+  // TODO fetch from server
+  // TODO save on blur
+  // TODO update values with values from server
+  typeaheadSrc = ['Enrico Schlag', 'Stefanie Herrmann', 'David Mamsch'];
+  return typeaheadSrc;
 }
