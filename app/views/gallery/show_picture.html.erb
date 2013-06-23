@@ -7,6 +7,11 @@
              :remote => true do %>
 
   <%= hidden_field :picture, :id %>
+  <%= hidden_field_tag 'user[faces_and_keywords]',
+                       load_faces_and_keywords_url(
+                         :user_id => @user.id,
+                         :format  => :json
+                       ) %>
 
   <%= image_tag @picture.file_url('medium'),
                 :width => 300,

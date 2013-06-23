@@ -2,22 +2,20 @@ MmdbFotoportal::Application.routes.draw do
 
   root :to => 'home#index'
   
-  match '/login' => 'user#login', :as => :login
+  match '/login'    => 'user#login', :as => :login
   match '/register' => 'user#register', :as => :register
-  match '/logout' => 'user#logout', :as => :logout
-  match '/upload' => 'picture#upload', :as => :upload
+  match '/logout'   => 'user#logout', :as => :logout
+  match '/upload'   => 'picture#upload', :as => :upload
 
-  match '/pictures' => 'gallery#show_folder', :as => :gallery
+  match '/pictures'          => 'gallery#show_folder', :as => :gallery
   match '/folder/:folder_id' => 'gallery#show_folder', :as => :folder
-  match '/pictures/load' => 'gallery#load_more_pictures', :as => :load_more_pictures
-
-  match '/:picture_id' => 'gallery#show_picture', :as => :picture, 
+  match '/:picture_id'       => 'gallery#show_picture', :as => :picture, 
         :constraints => { :picture_id => /\d+/ }
-
+          
+  match '/pictures/load' => 'gallery#load_more_pictures', :as => :load_more_pictures
+  match '/pictures/faces_and_keywords' => 'gallery#load_faces_and_keywords', :as => :load_faces_and_keywords
   match '/:picture_id/edit' => 'picture#edit', :as => :edit_picture,
         :constraints => { :picture_id => /\d+/ }
-
-  match '/detect' => 'home#test_detection'
 
   # The priority is based upon order of creation:
   # first created -> highest priority.

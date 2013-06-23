@@ -1,9 +1,13 @@
 $(function() {
 
-  var $pictureForm = $('#form-picture-edit');
+  // vars
+  var $pictureForm = $('#form-picture-edit'),
+      typeaheadSrc;
 
-  // INIT FACE DETECTION
-  // ---------------------------------------------------------------------------
+
+  /* INIT FACE DETECTION
+   * -----------------------------------------------------------------------------
+   */
   var image = $('.do-facedetect').get(0);
   if (typeof image != 'undefined') {
     image.onload = function () {
@@ -12,8 +16,59 @@ $(function() {
   }
 
 
-  // EVENT LISTENER FOR FORM AND ITS INPUTS
-  // ---------------------------------------------------------------------------
+  /* INIT AUTOCOMPLETE FOR FACES AND KEYWORDS
+   * ---------------------------------------------------------------------------
+   * 
+   * We have to wrap the typeahead()-call in a little plugin so we can apply it
+   * to elements that do not yet exist.
+   */
+  $.fn.applyTypeahead = function() {
+
+    return this.typeahead({
+      source: function(query, process) {
+        var processQuery = function(process, $element){
+          return function() {
+            var takeKeywords = $element.attr('id') == 'picture_keywords';
+            process(takeKeywords ? typeaheadSrc.keywords : typeaheadSrc.faces);
+          };
+        }(process, this.$element);
+
+        // load faces and keywords if we haven't done already
+        if (typeof typeaheadSrc == 'undefined') {
+          $.ajax({
+            url: $('#user_faces_and_keywords').val(),
+            success: function(data) {
+              typeaheadSrc = data;
+              processQuery();
+            }
+          });
+
+        // if faces and keywords have already been loaded: continue to process
+        } else {
+          processQuery();
+        }
+      },
+
+      matcher: matcher = function (item) {
+        var query = this.query.replace(/.*(, ?(.*))/, '$2');
+        return ~item.toLowerCase().indexOf(query.toLowerCase());
+      },
+
+      updater: updater = function (item) {
+        var val = this.$element.val();
+        if (val.indexOf(',') < 0)
+          return item;
+        return val.replace(/(.+),.*/, '$1, ' + item);
+      }
+    });
+  };
+  $('#picture_persons, #picture_keywords').applyTypeahead();
+
+
+
+  /* EVENT LISTENER FOR FORM AND ITS INPUTS
+   * -----------------------------------------------------------------------------
+   */
 
   // handle ajax response
   $pictureForm.on('ajax:success', function(evt, data, status, xhr) {
@@ -39,31 +94,17 @@ $(function() {
         $pictureForm.submit();
       }
 
+
   // submit form on folder change
   }).on('change', 'select', function() {
     $pictureForm.submit();
-
-  // init autocomplete for faces
-  }).on('focus', '#picture_persons, .input-face-detection', function(e) {
-    $(this).typeahead({
-      source: getTypeaheadSrc(),
-      matcher: function (item) {
-        var query = this.query.replace(/.*(, ?(.*))/, '$2');
-        return ~item.toLowerCase().indexOf(query.toLowerCase());
-      },
-      updater: function (item) {
-        var val = this.$element.val();
-        if (val.indexOf(',') < 0)
-          return item;
-        return val.replace(/(.+),.*/, '$1, ' + item);
-      }
-    });
   });
 });
 
 
-// EXECUTE FACE DETECTION AND INSERT INPUT FOR FOUND FACES
-// -----------------------------------------------------------------------------
+/* EXECUTE FACE DETECTION AND INSERT INPUT FOR FOUND FACES
+ * -----------------------------------------------------------------------------
+ */
 function detectNewImage(image, async) {
 
   // callback after face was found
@@ -93,7 +134,9 @@ function detectNewImage(image, async) {
       .appendTo($detectedArea).css({
         top:  comp[i].height / 2 - 10,
         left: comp[i].width
-      });
+
+      // enable autocomplete
+      }).applyTypeahead();
     }
   }
 
@@ -116,19 +159,4 @@ function detectNewImage(image, async) {
       "min_neighbors": 1 });
     post(comp);
   }
-}
-
-
-// TYPEAHEAD SOURCE
-// -----------------------------------------------------------------------------
-var typeaheadSrc;
-function getTypeaheadSrc() {
-  if (typeof typeahead != 'undefined')
-    return typeaheadSrc;
-
-  // TODO fetch from server
-  // TODO save on blur
-  // TODO update values with values from server
-  typeaheadSrc = ['Enrico Schlag', 'Stefanie Herrmann', 'David Mamsch'];
-  return typeaheadSrc;
 }

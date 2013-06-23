@@ -12,12 +12,15 @@ $(function() {
         page                 = 1,
         isLoading            = false,
         hasMore              = true,
+
+        // currecnt scroll position
         previewsBottom       = 0,
         updatePreviewsBottom = function() {
           previewsBottom = $previews.height() + $previews.offset().top;
         };
         updatePreviewsBottom();
 
+    // scroll event listener
     $(window).scroll(function() {
       if (!isLoading && hasMore && window.scrollY + window.innerHeight >= previewsBottom) {
         isLoading = true;
@@ -34,7 +37,7 @@ $(function() {
           },
 
           success: function(data) {
-            var html    = ''
+            var html    = '',
                 $target = $('#show-folder-image-previews');
             
             for (var i = 0; i < data.pictures.length; i++) {
@@ -50,9 +53,15 @@ $(function() {
           complete: function() {
             updatePreviewsBottom();
             isLoading = false;
+
+            // trigger scroll event in case window height is too low (so it is
+            // not yet scrollable)
+            $(window).scroll();
           }
         });
       }
-    });
+
+    // trigger initial scroll event
+    }).scroll();
   }
 });

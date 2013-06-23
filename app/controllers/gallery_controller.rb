@@ -32,4 +32,14 @@ class GalleryController < ApplicationController
     @pictures = all_pics.offset(offset).limit(PICTURES_PER_PAGE)
     @has_more = all_pics.count > offset + PICTURES_PER_PAGE
   end
+
+
+  # get faces for auto-completion
+  def load_faces_and_keywords
+    p = User.find(params[:user_id]).pictures
+    render :json => {
+      :faces    => p.joins(:persons).pluck('persons.name').uniq,
+      :keywords => p.joins(:keywords).pluck('keywords.name').uniq
+    }
+  end
 end
