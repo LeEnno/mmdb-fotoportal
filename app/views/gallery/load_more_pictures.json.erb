@@ -1,0 +1,6 @@
+{
+  "pictures": [
+    <%= ('"' + image_previews_with_markup(@pictures).join('", "') + '"').html_safe %>
+  ],
+  "hasMore": <%= @has_more.to_s %>
+}

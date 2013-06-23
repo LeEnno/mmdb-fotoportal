@@ -52,7 +52,7 @@ function detectNewImage(image, async) {
 
   // callback after face was found
   function post(comp) {
-    console.log('stopped');
+    console.log('stopped', comp);
 
     for (var i = 0; i < comp.length; i++) {
 

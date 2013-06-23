@@ -1,0 +1,58 @@
+$(function() {
+  // add Permalink to uploaded photo
+  $('.dropzone').on('dzUploadSuccess', '.dz-preview', function(e, permalink) {
+    $(this).append('<a href="' + permalink + '">Link</a>');
+  });
+
+  // INFINITE SCROLL
+  // ---------------------------------------------------------------------------
+  if ($('.is-show-folder').length > 0) {
+    var $previews            = $('#show-folder-image-previews'),
+        folderID             = $previews.data('folder-id'),
+        page                 = 1,
+        isLoading            = false,
+        hasMore              = true,
+        previewsBottom       = 0,
+        updatePreviewsBottom = function() {
+          previewsBottom = $previews.height() + $previews.offset().top;
+        };
+        updatePreviewsBottom();
+
+    $(window).scroll(function() {
+      if (!isLoading && hasMore && window.scrollY + window.innerHeight >= previewsBottom) {
+        isLoading = true;
+
+        $.ajax({
+          url: '<%= MmdbFotoportal::Application.routes.url_helpers.load_more_pictures_path(:format => :json) %>',
+          data: {
+            page:      ++page,
+            folder_id: folderID
+          },
+
+          error: function(e) {
+            console.log("error", e);
+          },
+
+          success: function(data) {
+            var html    = ''
+                $target = $('#show-folder-image-previews');
+            
+            for (var i = 0; i < data.pictures.length; i++) {
+              html += data.pictures[i];
+            };
+            $target.append(html);
+            
+            hasMore = data.hasMore;
+            if (!hasMore)
+              $target.after('<p>Keine weiteren Fotos in diesem Ordner</p>');
+          },
+
+          complete: function() {
+            updatePreviewsBottom();
+            isLoading = false;
+          }
+        });
+      }
+    });
+  }
+});

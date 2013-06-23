@@ -8,6 +8,8 @@ MmdbFotoportal::Application.routes.draw do
   match '/upload' => 'picture#upload', :as => :upload
 
   match '/pictures' => 'gallery#show_folder', :as => :gallery
+  match '/folder/:folder_id' => 'gallery#show_folder', :as => :folder
+  match '/pictures/load' => 'gallery#load_more_pictures', :as => :load_more_pictures
 
   match '/:picture_id' => 'gallery#show_picture', :as => :picture, 
         :constraints => { :picture_id => /\d+/ }

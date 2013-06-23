@@ -9,7 +9,15 @@
  * compiled file, but it's generally better to create a new file per style scope.
  *
  *= require_self
+ *= require bootstrap
  *= require basic
  *= require dropzone
  *= require_tree .
  */
+
+/*@import 'bootstrap';*/
+
+ .clearfix:before,
+ .clearfix:after {content:""; display:table;}
+ .clearfix:after {clear:both;}
+ .clearfix {zoom:1;} /* For IE 6/7 (trigger hasLayout) */

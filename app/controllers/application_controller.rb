@@ -3,12 +3,14 @@ class ApplicationController < ActionController::Base
 
   before_filter :set_login_status
 
+
   def redirect_if_not_authenticated
     if !@is_logged_in
       flash[:error] = 'nicht eingeloggt'
       redirect_to :root
     end
   end
+
 
   private
   def set_login_status
