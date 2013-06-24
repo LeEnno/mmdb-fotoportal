@@ -2,5 +2,17 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
+.tree, .tree ul {list-style:none;}
+.tree {margin-left:0;}
+.tree li {line-height:24px;}
+.tree .active {font-weight:bold;}
+.tree i {margin-right:4px;}
+
+.folder-add,
+.folder-remove {display:none; margin:0 4px;}
+.folder-add {margin-left:8px;}
+.folder-links-wrapper {padding-right:60px;}
+.folder-links-wrapper:hover .btn-mini {display:inline;}
+
 .show-folder-image-preview-wrapper {max-width:600px;}
 .show-folder-image-preview {display:block; float:left; width:100px; height:100px; margin:10px;}

@@ -6,6 +6,10 @@
 
 <%= form_tag upload_path, :class => 'dropzone' do %> <% end %>
 
+<h2>Ordner</h2>
+
+<%= folder_as_tree(@user.root_folder, @folder, true) %>
+
 <h2>Bilder</h2>
 
 <div id='show-folder-image-previews' class='show-folder-image-preview-wrapper clearfix' data-folder-id='<%= @folder.id %>'>

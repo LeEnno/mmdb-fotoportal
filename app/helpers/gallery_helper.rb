@@ -13,4 +13,27 @@ module GalleryHelper
               :class => 'show-folder-image-preview').gsub(/"/, "'")
     end
   end
+
+  # Render markup for folder children
+  # 
+  def folder_as_tree(folder, active_folder, is_root = false)
+    is_active = folder == active_folder
+
+    out = content_tag :i, nil, :class => 'icon-folder-' + (is_active ? 'open' : 'close')
+    
+    folder_name = folder.name || ('Alle Fotos' if is_root) || 'unbenannt'
+    folder_link = is_root ? gallery_path : folder_path(:folder_id => folder.id)
+    out += link_to folder_name, folder_link, :class => ('active' if is_active)
+    out += link_to '+', new_folder_path(:parent_id => folder.id), :class => 'btn btn-mini btn-success folder-add'
+    out += link_to '-', delete_folder_path, :class => 'btn btn-mini btn-danger folder-remove'
+    
+    out = content_tag :span, out.html_safe, :class => 'folder-links-wrapper'
+    
+    folder.children.each do |c|
+      out += folder_as_tree(c, active_folder)
+    end
+
+    out = content_tag :li, out.html_safe
+    content_tag :ul, out.html_safe, :class => ('tree' if is_root)
+  end
 end

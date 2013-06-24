@@ -4,8 +4,9 @@ $(function() {
     $(this).append('<a href="' + permalink + '">Link</a>');
   });
 
-  // INFINITE SCROLL
-  // ---------------------------------------------------------------------------
+  /* INFINITE SCROLL
+   * -----------------------------------------------------------------------------
+   */
   if ($('.is-show-folder').length > 0) {
     var $previews            = $('#show-folder-image-previews'),
         folderID             = $previews.data('folder-id'),
@@ -64,4 +65,45 @@ $(function() {
     // trigger initial scroll event
     }).scroll();
   }
+
+
+  /* FOLDER ADD AND REMOVE
+   * -----------------------------------------------------------------------------
+   */
+  $('.tree').on('click', '.folder-add', function(e) {
+    e.preventDefault();
+    
+    var $this     = $(this),
+        url       = $this.attr('href'),
+        inputID   = 'parent_id',
+        content   = '<input name="' + inputID + '" id="' + inputID + '" />';
+    
+    // build popover
+    $this.popover({
+      title: 'Name des Ordners?',
+      content: content,
+      html: true
+    }).popover('show');
+
+    // send request on enter
+    $('#' + inputID).focus().on('keydown', function(e) {
+      console.log("keycode", e.keyCode);
+      if (e.keyCode == 13) { // enter key
+        $.ajax({
+          url: url,
+          data: {name: $(this).val()},
+          success: function(data) {
+            $this.popover('destroy');
+
+            // TODO insert new folder
+            console.log(data.folder_id);
+          }
+        });
+      }
+
+    // close popover on blur
+    }).on('blur', function() {
+      $this.popover('destroy');
+    });
+  });
 });

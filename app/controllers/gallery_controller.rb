@@ -42,4 +42,53 @@ class GalleryController < ApplicationController
       :keywords => p.joins(:keywords).pluck('keywords.name').uniq
     }
   end
+
+
+  # add new folder
+  def add_folder
+    f = Folder.new(
+      :name   => params[:name]#,
+      # :parent => ,
+      # :user   => @user
+    )
+
+    f.parent = Folder.find(params[:parent_id])
+    f.user = @user
+    f.save
+
+    render :json => {
+      :folder_id => f.id
+    }
+  end
+
+
+  # remove folder
+  def remove_folder
+    f = Folder.find(params[:folder_id])
+    persons = []
+    keywords = []
+
+    f.picures.each do |p|
+      p.keywords.each do |k|
+        keywords << k if !k.in?(keywords)
+      end
+      p.persons.each do |ps|
+        persons << ps if !ps.in?(persons)
+      end
+
+      p.delete_all
+    end
+
+    keywords.each do |k|
+      k.delete if k.pictures.count < 1
+    end
+
+    persons.each do |ps|
+      ps.delete if ps.pictures.count < 1
+    end
+
+    render :json => {
+      :status => 'ok'
+    }
+  end
 end
