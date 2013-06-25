@@ -7,10 +7,10 @@ MmdbFotoportal::Application.routes.draw do
   match '/logout'   => 'user#logout', :as => :logout
   match '/upload'   => 'picture#upload', :as => :upload
 
-  match '/pictures'              => 'gallery#show_folder', :as => :gallery
-  match '/folder/:folder_id'     => 'gallery#show_folder', :as => :folder
-  match '/folder/add/:parent_id' => 'gallery#add_folder', :as => :new_folder
-  match '/folder/remove'         => 'gallery#add_folder', :as => :delete_folder
+  match '/pictures'                 => 'gallery#show_folder', :as => :gallery
+  match '/folder/:folder_id'        => 'gallery#show_folder', :as => :folder
+  match '/folder/add/:parent_id'    => 'gallery#add_folder', :as => :new_folder
+  match '/folder/remove/:folder_id' => 'gallery#remove_folder', :as => :delete_folder
   
   match '/:picture_id'       => 'gallery#show_picture', :as => :picture, 
         :constraints => { :picture_id => /\d+/ }

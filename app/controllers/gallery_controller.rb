@@ -29,7 +29,7 @@ class GalleryController < ApplicationController
     offset   = (page - 1) * PICTURES_PER_PAGE
     all_pics = folder.all_pictures
 
-    @pictures = all_pics.slice(offset, PICTURES_PER_PAGE)
+    @pictures = all_pics.slice(offset, PICTURES_PER_PAGE) || []
     @has_more = all_pics.count > offset + PICTURES_PER_PAGE
   end
 
@@ -57,33 +57,36 @@ class GalleryController < ApplicationController
   end
 
 
-  # remove folder
+  # Remove folder.
+  # 
+  # For each children folder we collect keywords and persons, so we can check
+  # afterwards if they have to be deleted completely because of no other
+  # associated pictures. This keeps our database clean.
+  # 
+  # Afterwards we delete all children folder's pictures and the folders itself.
+  # 
   def remove_folder
-    f = Folder.find(params[:folder_id])
-    persons = []
+    f        = Folder.find(params[:folder_id])
+    parent   = f.parent
+    persons  = []
     keywords = []
 
-    f.picures.each do |p|
-      p.keywords.each do |k|
-        keywords << k if !k.in?(keywords)
+    # iterate over children folder and store keywords * persons
+    f.children.each do |child|
+      child.pictures.each do |p|
+        p.keywords.each { |k| keywords << k if !k.in?(keywords) }
+        p.persons.each { |ps| persons << ps if !ps.in?(persons) }
+        #p.delete
       end
-      p.persons.each do |ps|
-        persons << ps if !ps.in?(persons)
-      end
-
-      p.delete_all
+      child.destroy
     end
 
-    keywords.each do |k|
-      k.delete if k.pictures.count < 1
-    end
+    # delete folder and all orphaned keywords and persons
+    f.destroy
+    keywords.each { |k| k.delete if k.pictures.count < 1 }
+    persons.each { |ps| ps.delete if ps.pictures.count < 1 }
 
-    persons.each do |ps|
-      ps.delete if ps.pictures.count < 1
-    end
-
-    render :json => {
-      :status => 'ok'
-    }
+    # give an arbitrary response
+    render :json => {:parent_id => parent.id}
   end
 end

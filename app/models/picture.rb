@@ -2,7 +2,12 @@ class Picture < ActiveRecord::Base
   attr_accessible :aperture, :camera, :color_depth, :color_space, :exposure_time, :filename, :filesize, :focal_length, :folder, :has_flash, :height, :iso, :latitude, :location, :longitude, :mean_black, :mean_blue, :mean_brown, :mean_cyan, :mean_green, :mean_magenta, :mean_orange, :mean_red, :mean_violet, :mean_white, :mean_yellow, :path_hash, :taken_at, :title, :width
 
   belongs_to :folder
-  has_and_belongs_to_many :persons, :join_table => 'appearances'
+  has_many :appearances, :dependent => :destroy
+  has_many :persons, :through => :appearances
+
+  has_many :keywords_pictures, :dependent => :destroy
+  has_many :keywords, :through => :keywords_pictures
+  
   has_and_belongs_to_many :keywords
   # should semantically be `belongs_to`, but `:through` wouldn't work
   has_one :user, :through => :folder

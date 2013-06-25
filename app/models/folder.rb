@@ -4,7 +4,7 @@ class Folder < ActiveRecord::Base
   belongs_to :user
   belongs_to :parent, :class_name => 'Folder', :foreign_key => 'parent_id'
   has_many :children, :class_name => 'Folder', :foreign_key => 'parent_id'
-  has_many :pictures
+  has_many :pictures, :dependent => :destroy
 
   def all_pictures
     pics = self.pictures

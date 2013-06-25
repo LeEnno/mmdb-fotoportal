@@ -4,7 +4,9 @@
 
 <h2>Upload</h2>
 
-<%= form_tag upload_path, :class => 'dropzone' do %> <% end %>
+<%= form_tag upload_path, :class => 'dropzone' do %>
+  <%= hidden_field :folder, :id %>
+<% end %>
 
 <h2>Ordner</h2>
 

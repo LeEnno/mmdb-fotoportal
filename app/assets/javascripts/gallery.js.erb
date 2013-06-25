@@ -1,4 +1,5 @@
 $(function() {
+
   // add Permalink to uploaded photo
   $('.dropzone').on('dzUploadSuccess', '.dz-preview', function(e, permalink) {
     $(this).append('<a href="' + permalink + '">Link</a>');
@@ -74,6 +75,7 @@ $(function() {
 
   // add folder
   $tree.on('click', '.folder-add', function(e) {
+    console.log("clicked folder add");
     e.preventDefault();
     
     var $this     = $(this),
@@ -115,9 +117,27 @@ $(function() {
     }).on('blur', function() {
       $this.popover('destroy');
     });
+
+
+  // remove folder
   }).on('click', '.folder-remove', function(e) {
+    console.log("clicked folder remove");
     e.preventDefault();
 
-    
+    var $this     = $(this),
+        url       = $this.attr('href');
+
+    $.ajax({
+      url: url,
+      success: function(data) {
+        var $li = $this.closest('li');
+
+        // TODO why doesn't click-event get triggered?
+        if ($li.find('a.active').length > 0)
+          $('#folder' + data.parent_id).click();
+        else
+          $li.remove();
+      }
+    });
   });
 });

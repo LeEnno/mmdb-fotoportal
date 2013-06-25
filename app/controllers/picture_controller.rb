@@ -12,7 +12,7 @@ class PictureController < ApplicationController
     File.open(@picture.file_path('original'), 'wb') do |file|
       file.write(file_contents.read)
       @picture.extract_metadata
-      @picture.folder = @user.root_folder
+      @picture.folder = Folder.find(params[:folder][:id])
       @picture.save
     end
 

@@ -11,9 +11,9 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130616110946) do
+ActiveRecord::Schema.define(:version => 20130625104928) do
 
-  create_table "appearances", :id => false, :force => true do |t|
+  create_table "appearances", :force => true do |t|
     t.integer "picture_id", :null => false
     t.integer "person_id",  :null => false
   end
@@ -37,7 +37,7 @@ ActiveRecord::Schema.define(:version => 20130616110946) do
     t.datetime "updated_at", :null => false
   end
 
-  create_table "keywords_pictures", :id => false, :force => true do |t|
+  create_table "keywords_pictures", :force => true do |t|
     t.integer "picture_id", :null => false
     t.integer "keyword_id", :null => false
   end
