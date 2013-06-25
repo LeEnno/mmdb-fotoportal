@@ -14,13 +14,14 @@ module GalleryHelper
     end
   end
 
+
   # Render markup for folder children
   # 
   def folder_as_tree(folder, active_folder, is_root = false)
     is_active = folder == active_folder
 
     out = content_tag :i, nil, :class => 'icon-folder-' + (is_active ? 'open' : 'close')
-    
+
     folder_name = folder.name || ('Alle Fotos' if is_root) || 'unbenannt'
     folder_link = is_root ? gallery_path : folder_path(:folder_id => folder.id)
     out += link_to folder_name, folder_link, :class => ('active' if is_active)
@@ -34,6 +35,14 @@ module GalleryHelper
     end
 
     out = content_tag :li, out.html_safe
-    content_tag :ul, out.html_safe, :class => ('tree' if is_root)
+
+    if is_root
+      ul_options = {
+        :id                      => 'navFolderTree',
+        :class                   => 'tree',
+        :"data-active-folder-id" => active_folder.id
+      }
+    end
+    content_tag :ul, out.html_safe, (ul_options || {})
   end
 end

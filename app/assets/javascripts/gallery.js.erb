@@ -70,11 +70,14 @@ $(function() {
   /* FOLDER ADD AND REMOVE
    * -----------------------------------------------------------------------------
    */
-  $('.tree').on('click', '.folder-add', function(e) {
+  var $tree = $('#navFolderTree');
+  $tree.on('click', '.folder-add', function(e) {
     e.preventDefault();
     
     var $this     = $(this),
         url       = $this.attr('href'),
+        activeID  = $tree.data('active-folder-id'),
+        $parentUl = $this.closest('ul'),
         inputID   = 'parent_id',
         content   = '<input name="' + inputID + '" id="' + inputID + '" />';
     
@@ -91,12 +94,16 @@ $(function() {
       if (e.keyCode == 13) { // enter key
         $.ajax({
           url: url,
-          data: {name: $(this).val()},
+          
+          data: {
+            name:      $(this).val(),
+            active_id: activeID
+          },
+
+          // data will return html markup for parent list
           success: function(data) {
             $this.popover('destroy');
-
-            // TODO insert new folder
-            console.log(data.folder_id);
+            $parentUl.replaceWith(data);
           }
         });
       }

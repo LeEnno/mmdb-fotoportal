@@ -46,19 +46,14 @@ class GalleryController < ApplicationController
 
   # add new folder
   def add_folder
-    f = Folder.new(
-      :name   => params[:name]#,
-      # :parent => ,
-      # :user   => @user
-    )
-
-    f.parent = Folder.find(params[:parent_id])
-    f.user = @user
+    @parent = Folder.find(params[:parent_id])
+    f = Folder.new(:name => params[:name])
+    f.parent = @parent # doesn't like to be mass-assigned =/
+    f.user   = @user
     f.save
+    @active_folder = Folder.find(params[:active_id])
 
-    render :json => {
-      :folder_id => f.id
-    }
+    render :layout => false
   end
 
 
