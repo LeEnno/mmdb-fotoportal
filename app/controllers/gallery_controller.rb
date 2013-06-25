@@ -11,7 +11,7 @@ class GalleryController < ApplicationController
     @folder = params[:folder_id].present? \
       ? Folder.find(params[:folder_id]) \
       : @user.root_folder
-    @pictures = @folder.pictures.limit(PICTURES_PER_PAGE)
+    @pictures = @folder.all_pictures.slice(0, PICTURES_PER_PAGE)
   end
 
 
@@ -27,9 +27,9 @@ class GalleryController < ApplicationController
     page     = params[:page].to_i
     folder   = Folder.find(params[:folder_id].to_i)
     offset   = (page - 1) * PICTURES_PER_PAGE
-    all_pics = folder.pictures
+    all_pics = folder.all_pictures
 
-    @pictures = all_pics.offset(offset).limit(PICTURES_PER_PAGE)
+    @pictures = all_pics.slice(offset, PICTURES_PER_PAGE)
     @has_more = all_pics.count > offset + PICTURES_PER_PAGE
   end
 

@@ -71,6 +71,8 @@ $(function() {
    * -----------------------------------------------------------------------------
    */
   var $tree = $('#navFolderTree');
+
+  // add folder
   $tree.on('click', '.folder-add', function(e) {
     e.preventDefault();
     
@@ -90,8 +92,9 @@ $(function() {
 
     // send request on enter
     $('#' + inputID).focus().on('keydown', function(e) {
-      console.log("keycode", e.keyCode);
-      if (e.keyCode == 13) { // enter key
+      
+      // on enter
+      if (e.keyCode == 13) {
         $.ajax({
           url: url,
           
@@ -112,5 +115,9 @@ $(function() {
     }).on('blur', function() {
       $this.popover('destroy');
     });
+  }).on('click', '.folder-remove', function(e) {
+    e.preventDefault();
+
+    
   });
 });
