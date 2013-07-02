@@ -1,18 +1,31 @@
-// Place all the styles related to the gallery controller here.
-// They will automatically be included in application.css.
-// You can use Sass (SCSS) here: http://sass-lang.com/
+.search-wrapper {display:block;}
+.token-wrapper {
+  margin-right:10px;
 
-.tree, .tree ul {list-style:none;}
-.tree {margin-left:0;}
-.tree li {line-height:24px;}
-.tree .active {font-weight:bold;}
-.tree i {margin-right:4px;}
+  .dropdown {float:left;}
+  .add-on {height:16px; font-size:12px; line-height:16px;}
+  .token-input {@extend .add-on;}
+  .token-input {text-align:right;}
+  .token-btn {padding-left:6px; padding-right:6px; font-size:12px; line-height:16px;}
+  .caret {margin-top:6px;}
+  &.input-prepend .token-comparable-btn:first-child {border-radius:0;} // be that specific to overwrit ebootstrap defaults
+}
 
-.folder-add,
+.tree {
+  margin-left:0;
+
+  ul {list-style:none;}
+  li {line-height:24px;}
+  .active {font-weight:bold;}
+  i {margin-right:4px;}
+}
+
 .folder-remove {display:none; margin:0 4px;}
-.folder-add {margin-left:8px;}
-.folder-links-wrapper {padding-right:60px;}
-.folder-links-wrapper:hover .btn-mini {display:inline;}
+.folder-add {@extend .folder-remove; margin-left:8px;}
+.folder-links-wrapper {
+  padding-right:60px;
+  &:hover .btn-mini {display:inline;}
+}
 
 .show-folder-image-preview-wrapper {max-width:600px;}
 .show-folder-image-preview {display:block; float:left; width:100px; height:100px; margin:10px;}

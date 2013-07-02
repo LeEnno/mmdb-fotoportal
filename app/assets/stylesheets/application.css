@@ -23,3 +23,5 @@
  .clearfix {zoom:1;} /* For IE 6/7 (trigger hasLayout) */
 
  .popover-title {font-weight:bold;}
+
+ .input-micro {width:30px;}

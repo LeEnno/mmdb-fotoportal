@@ -49,12 +49,12 @@ $(function() {
         }
       },
 
-      matcher: matcher = function (item) {
+      matcher: function (item) {
         var query = this.query.replace(/.*(, ?(.*))/, '$2');
         return ~item.toLowerCase().indexOf(query.toLowerCase());
       },
 
-      updater: updater = function (item) {
+      updater: function (item) {
         var val = this.$element.val();
         if (val.indexOf(',') < 0)
           return item;

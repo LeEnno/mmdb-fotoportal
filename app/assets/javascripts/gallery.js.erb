@@ -5,8 +5,198 @@ $(function() {
     $(this).append('<a href="' + permalink + '">Link</a>');
   });
 
+
+  /* SEARCH TOKENS
+   * ---------------------------------------------------------------------------
+   */
+  var sourceTitles     = [],
+      sourceListMarkup = '',
+
+      sourceObj        = { // order = priority
+        Aufnahmedatum:    {name: 'taken_at',     regex: /^(\d{2}.){2}.\d{2,4}$/,    comparable: true},
+        'Upload-Datum':   {name: 'created_at',   regex: /^(\d{2}.){2}.\d{2,4}$/,    comparable: true},
+        'Update-Datum':   {name: 'updated_at',   regex: /^(\d{2}.){2}.\d{2,4}$/,    comparable: true},
+        Breite:           {name: 'width',        regex: /^\d{3,}$/,    unit: 'px',  comparable: true},
+        "Höhe":           {name: 'height',       regex: /^\d{3,}$/,    unit: 'px',  comparable: true},
+        Farbtiefe:        {name: 'color_depth',  regex: /^(8|16|24)$/, unit: 'Bit', comparable: true},
+        "Dateigröße":     {name: 'filesize',     regex: /^\d+$/,       unit: 'MB',  comparable: true},
+        Belichtungszeit:  {name: 'height',       regex: /^\d+.?\d+$/,  unit: 's',   comparable: true},
+        Brennweite:       {name: 'focal_length', regex: /^\d{2,}$/,    unit: 'mm',  comparable: true},
+        Blende:           {name: 'aperture',     regex: /^\d+.?\d+$/}, // not sure about this
+        ISO:              {name: 'iso',          regex: /^\d{3,4}$/, comparable: true},
+        'Rot-Anteil':     {name: 'mean_red',     regex: /^\d{2}$/,     unit: '%',   comparable: true},
+        'Grün-Anteil':    {name: 'mean_green',   regex: /^\d{2}$/,     unit: '%',   comparable: true},
+        'Blau-Anteil':    {name: 'mean_blue',    regex: /^\d{2}$/,     unit: '%',   comparable: true},
+        'Gelb-Anteil':    {name: 'mean_yellow',  regex: /^\d{2}$/,     unit: '%',   comparable: true},
+        'Orange-Anteil':  {name: 'mean_orange',  regex: /^\d{2}$/,     unit: '%',   comparable: true},
+        'Violett-Anteil': {name: 'mean_violet',  regex: /^\d{2}$/,     unit: '%',   comparable: true},
+        'Magenta-Anteil': {name: 'mean_magenta', regex: /^\d{2}$/,     unit: '%',   comparable: true},
+        'Cyan-Anteil':    {name: 'mean_cyan',    regex: /^\d{2}$/,     unit: '%',   comparable: true},
+        'Braun-Anteil':   {name: 'mean_brown',   regex: /^\d{2}$/,     unit: '%',   comparable: true},
+        'Weiß-Anteil':    {name: 'mean_white',   regex: /^\d{2}$/,     unit: '%',   comparable: true},
+        'Schwarz-Anteil': {name: 'mean_black',   regex: /^\d{2}$/,     unit: '%',   comparable: true},
+        Farbraum:         {name: 'color_space',  regex: /^(RGB|sRGB)$/,},
+        Blitz:            {name: 'has_flash',    regex: /^(an|aus)$/},
+        Dateityp:         {name: 'extension',    regex: /^(jpe?g|png|gif)$/i},
+        Bildtitel:        {name: 'title',        regex: /^.+$/},
+        Ort:              {name: 'camera',       regex: /^.+$/, priority: 0},
+        Keyword:          {name: 'keywords',     regex: /^.+$/},
+        Person:           {name: 'persons',      regex: /^[^\d]+$/},
+        Kameramodell:     {name: 'camera',       regex: /^.+$/}
+      };
+
+  $('#search').typeahead({
+    items: 17,
+
+    source: function(query, process) {
+      if (sourceTitles.length < 1) {
+        for (title in sourceObj) {
+          sourceTitles.push(title);
+          sourceListMarkup += '<li>' + title + '</li>';
+        }
+      }
+
+      process(sourceTitles);
+    },
+
+    matcher: function (item) {
+      return sourceObj[item].regex.test(this.query);
+    },
+
+    updater: function (item) {
+      // TODO list items littler font
+      // TODO make folder click to token
+      // TODO limit li height and make it scrollable
+      var template = (
+            '<div class="input-prepend input-append token-wrapper">' +
+              '<div class="btn-group">' +
+                '<div class="dropdown">' +
+                  '<button class="btn btn-primary token-btn dropdown-toggle" data-toggle="dropdown">' +
+                    '##tokenTitle## ' + // leave the space in there so .caret gets some distance
+                    '<span class="caret"></span>' +
+                  '</button>' +
+                  '<ul class="dropdown-menu">' +
+                    '##listItems##' +
+                  '</ul>' +
+                '</div>' +
+                (typeof sourceObj[item].comparable != 'undefined'
+                  ? '<div class="dropdown">' +
+                      '<button class="btn token-btn token-comparable-btn dropdown-toggle" data-toggle="dropdown">=</button>' +
+                      '<ul class="dropdown-menu">' + 
+                        '<li>≤</li>' +
+                        '<li>=</li>' +
+                        '<li>≥</li>' +
+                      '</ul>' +
+                      '<input type="hidden" name="##inputName##_operator" value="=">' +
+                    '</div>'
+                  : '') +
+              '</div>' +
+              '<input class="token-input ##inputClass##" name="##inputName##" type="text" value="##inputValue##">' +
+              (typeof sourceObj[item].unit != 'undefined'
+                ? '<span class="add-on">' + sourceObj[item].unit + '</span>'
+                : '') +
+            '</div>'
+          ).replace(/##tokenTitle##/, item)
+          .replace(/##listItems##/, sourceListMarkup.replace('<li>' + item + '</li>', ''))
+          .replace(/##inputClass##/, function(length) {
+            if (length < 5)       return 'input-micro';
+            else if (length < 9)  return 'input-mini';
+            else if (length < 13) return 'input-small';
+            else if (length < 22) return 'input-medium'
+            else                  return 'input-large';
+          }(this.query.length))
+          .replace(/##inputValue##/, this.query)
+          .replace(/##inputName##/, sourceObj[item].name);
+
+      $(template).insertBefore('.search-wrapper');
+
+      return ''; // empty input
+    }
+  });
+  
+
+  /* FOLDER ADD AND REMOVE
+   * ---------------------------------------------------------------------------
+   */
+  var $tree = $('#navFolderTree');
+
+  // add folder
+  $tree.on('click', '.folder-add', function(e) {
+    e.preventDefault();
+    
+    var $this     = $(this),
+        url       = $this.attr('href'),
+        activeID  = $tree.data('active-folder-id'),
+        $parentUl = $this.closest('ul'),
+        inputID   = 'parent_id',
+        content   = '<input name="' + inputID + '" id="' + inputID + '" />';
+    
+    // build popover
+    $this.popover({
+      title: 'Name des Ordners?',
+      content: content,
+      html: true
+    }).popover('show');
+
+    // send request on enter
+    $('#' + inputID).focus().on('keydown', function(e) {
+      
+      // on enter
+      if (e.keyCode == 13) {
+        $.ajax({
+          url: url,
+          
+          data: {
+            name:      $(this).val(),
+            active_id: activeID
+          },
+
+          // data will return html markup for parent list
+          success: function(data) {
+            $this.popover('destroy');
+            $parentUl.replaceWith(data);
+          }
+        });
+      }
+
+    // close popover on blur
+    }).on('blur', function() {
+      $this.popover('destroy');
+    });
+
+
+  // remove folder
+  }).on('click', '.folder-remove', function(e) {
+    e.preventDefault();
+
+    var $this     = $(this),
+        url       = $this.attr('href');
+
+    $.ajax({
+      url: url,
+      success: function(data) {
+        var $li = $this.closest('li');
+
+        if ($li.find('a.active').length > 0)
+          $('#folder' + data.parent_id).click();
+        else
+          $li.remove();
+      }
+    });
+
+
+  // folder click adds token to search
+  }).on('click', '.folder-links-wrapper a', function(e) {
+    // e.preventDefault();
+  
+    console.log('folder link clicked');
+    // TODO make function call that is also called on push state
+    // has to make/replace folder token, make new folder active, set hidden input etc.
+  });
+
+
   /* INFINITE SCROLL
-   * -----------------------------------------------------------------------------
+   * ---------------------------------------------------------------------------
    */
   if ($('.is-show-folder').length > 0) {
     var $previews            = $('#show-folder-image-previews'),
@@ -66,78 +256,4 @@ $(function() {
     // trigger initial scroll event
     }).scroll();
   }
-
-
-  /* FOLDER ADD AND REMOVE
-   * -----------------------------------------------------------------------------
-   */
-  var $tree = $('#navFolderTree');
-
-  // add folder
-  $tree.on('click', '.folder-add', function(e) {
-    console.log("clicked folder add");
-    e.preventDefault();
-    
-    var $this     = $(this),
-        url       = $this.attr('href'),
-        activeID  = $tree.data('active-folder-id'),
-        $parentUl = $this.closest('ul'),
-        inputID   = 'parent_id',
-        content   = '<input name="' + inputID + '" id="' + inputID + '" />';
-    
-    // build popover
-    $this.popover({
-      title: 'Name des Ordners?',
-      content: content,
-      html: true
-    }).popover('show');
-
-    // send request on enter
-    $('#' + inputID).focus().on('keydown', function(e) {
-      
-      // on enter
-      if (e.keyCode == 13) {
-        $.ajax({
-          url: url,
-          
-          data: {
-            name:      $(this).val(),
-            active_id: activeID
-          },
-
-          // data will return html markup for parent list
-          success: function(data) {
-            $this.popover('destroy');
-            $parentUl.replaceWith(data);
-          }
-        });
-      }
-
-    // close popover on blur
-    }).on('blur', function() {
-      $this.popover('destroy');
-    });
-
-
-  // remove folder
-  }).on('click', '.folder-remove', function(e) {
-    console.log("clicked folder remove");
-    e.preventDefault();
-
-    var $this     = $(this),
-        url       = $this.attr('href');
-
-    $.ajax({
-      url: url,
-      success: function(data) {
-        var $li = $this.closest('li');
-
-        // TODO why doesn't click-event get triggered?
-        if ($li.find('a.active').length > 0)
-          $('#folder' + data.parent_id).click();
-        else
-          $li.remove();
-      }
-    });
-  });
 });
