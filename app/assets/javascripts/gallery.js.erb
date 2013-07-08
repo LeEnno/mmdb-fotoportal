@@ -1,3 +1,5 @@
+// TODO make folder click to token
+
 $(function() {
 
   // add Permalink to uploaded photo
@@ -23,7 +25,7 @@ $(function() {
         Belichtungszeit:  {name: 'height',       regex: /^\d+.?\d+$/,  unit: 's',   comparable: true},
         Brennweite:       {name: 'focal_length', regex: /^\d{2,}$/,    unit: 'mm',  comparable: true},
         Blende:           {name: 'aperture',     regex: /^\d+.?\d+$/}, // not sure about this
-        ISO:              {name: 'iso',          regex: /^\d{3,4}$/, comparable: true},
+        ISO:              {name: 'iso',          regex: /^\d{3,4}$/,                comparable: true},
         'Rot-Anteil':     {name: 'mean_red',     regex: /^\d{2}$/,     unit: '%',   comparable: true},
         'Grün-Anteil':    {name: 'mean_green',   regex: /^\d{2}$/,     unit: '%',   comparable: true},
         'Blau-Anteil':    {name: 'mean_blue',    regex: /^\d{2}$/,     unit: '%',   comparable: true},
@@ -39,65 +41,67 @@ $(function() {
         Blitz:            {name: 'has_flash',    regex: /^(an|aus)$/},
         Dateityp:         {name: 'extension',    regex: /^(jpe?g|png|gif)$/i},
         Bildtitel:        {name: 'title',        regex: /^.+$/},
-        Ort:              {name: 'camera',       regex: /^.+$/, priority: 0},
+        Ort:              {name: 'camera',       regex: /^.+$/},
         Keyword:          {name: 'keywords',     regex: /^.+$/},
         Person:           {name: 'persons',      regex: /^[^\d]+$/},
         Kameramodell:     {name: 'camera',       regex: /^.+$/}
       };
 
+
+  // init typeahead
   $('#search').typeahead({
     items: 17,
 
+    // give titles to search through and build markup for listing all titles
     source: function(query, process) {
       if (sourceTitles.length < 1) {
         for (title in sourceObj) {
           sourceTitles.push(title);
-          sourceListMarkup += '<li>' + title + '</li>';
+          sourceListMarkup += '<li><a href="#">' + title + '</a></li>';
         }
       }
 
       process(sourceTitles);
     },
 
+    // overwrite default matcher
     matcher: function (item) {
       return sourceObj[item].regex.test(this.query);
     },
 
+    // generate search token if item is selected
     updater: function (item) {
-      // TODO list items littler font
-      // TODO make folder click to token
-      // TODO limit li height and make it scrollable
-      var template = (
-            '<div class="input-prepend input-append token-wrapper">' +
+      var title    = item,
+          unit     = sourceObj[title].unit,
+          hasUnit  = typeof unit != 'undefined',
+          template = (
+            '<div class="input-prepend ' + (hasUnit ? 'input-append ' : '') + 'token-wrapper">' +
               '<div class="btn-group">' +
                 '<div class="dropdown">' +
                   '<button class="btn btn-primary token-btn dropdown-toggle" data-toggle="dropdown">' +
                     '##tokenTitle## ' + // leave the space in there so .caret gets some distance
                     '<span class="caret"></span>' +
                   '</button>' +
-                  '<ul class="dropdown-menu">' +
+                  '<ul class="dropdown-menu dropdown-menu-search-key">' +
                     '##listItems##' +
                   '</ul>' +
                 '</div>' +
-                (typeof sourceObj[item].comparable != 'undefined'
-                  ? '<div class="dropdown">' +
-                      '<button class="btn token-btn token-comparable-btn dropdown-toggle" data-toggle="dropdown">=</button>' +
-                      '<ul class="dropdown-menu">' + 
-                        '<li>≤</li>' +
-                        '<li>=</li>' +
-                        '<li>≥</li>' +
-                      '</ul>' +
-                      '<input type="hidden" name="##inputName##_operator" value="=">' +
-                    '</div>'
-                  : '') +
+                '<div class="dropdown dropdown-comparable' + (!!sourceObj[title].comparable ? '' : ' hide') + '">' +
+                  '<button class="btn token-btn token-comparable-btn dropdown-toggle" data-toggle="dropdown">=</button>' +
+                  '<ul class="dropdown-menu dropdown-menu-comparable">' + 
+                    '<li><a href="#">≤</a></li>' +
+                    '<li><a href="#">=</a></li>' +
+                    '<li><a href="#">≥</a></li>' +
+                  '</ul>' +
+                  '<input type="hidden" name="##inputName##_operator" value="=">' +
+                '</div>' +
               '</div>' +
               '<input class="token-input ##inputClass##" name="##inputName##" type="text" value="##inputValue##">' +
-              (typeof sourceObj[item].unit != 'undefined'
-                ? '<span class="add-on">' + sourceObj[item].unit + '</span>'
-                : '') +
+              '<a href="#" class="btn btn-danger token-delete">x</a>' + // must be before `span`, so last element gets correctly rounded borders
+              '<span class="add-on' + (hasUnit ? '' : ' hide') + '">' + sourceObj[title].unit + '</span>' +
             '</div>'
-          ).replace(/##tokenTitle##/, item)
-          .replace(/##listItems##/, sourceListMarkup.replace('<li>' + item + '</li>', ''))
+          ).replace(/##tokenTitle##/, title)
+          .replace(/##listItems##/, sourceListMarkup.replace('<li>' + title + '</li>', ''))
           .replace(/##inputClass##/, function(length) {
             if (length < 5)       return 'input-micro';
             else if (length < 9)  return 'input-mini';
@@ -106,12 +110,73 @@ $(function() {
             else                  return 'input-large';
           }(this.query.length))
           .replace(/##inputValue##/, this.query)
-          .replace(/##inputName##/, sourceObj[item].name);
+          .replace(/##inputName##/g, sourceObj[title].name);
 
       $(template).insertBefore('.search-wrapper');
 
       return ''; // empty input
     }
+  
+
+  // click on list element in search-key dropdown shows new title and changes
+  // title, updates comparable button and unit
+  }).closest('form').on('click', '.token-wrapper .dropdown-menu-search-key a', function(e) {
+    e.preventDefault();
+  
+    var $this     = $(this),
+        title     = $this.text(),
+        obj       = sourceObj[title];
+    
+    // show new title
+    $this.parents('.dropdown-menu-search-key').siblings('button')
+      .text(title + ' ')
+      .append('<span class="caret"></span>')
+      
+      // show/hide comparable
+      .parent() // .dropdown
+      .siblings('.dropdown-comparable')
+      .toggleClass('hide', !obj.comparable)
+
+      // change comparable hidden input name
+      .find('input')
+      .prop('name', obj.name + '_operator')
+      .end() // .dropdown-comparable
+    
+      // change key input value
+      .parent() // .btn-group
+      .siblings('input')
+      .prop('name', obj.name)
+
+      // show hide unit
+      .siblings('.add-on')
+      .toggleClass('hide', !obj.unit)
+      .text(obj.unit)
+
+      // toggle 'input-append'-class for unit
+      .closest('.input-prepend')
+      .toggleClass('input-append', !!obj.unit);
+  
+
+  // click on list element in comparator updates comparator (button and input)
+  }).on('click', '.token-wrapper .dropdown-menu-comparable a', function(e) {
+    e.preventDefault();
+
+    var $this     = $(this),
+        new_value = $this.text();
+
+    $this.closest('.dropdown-comparable')
+      .find('.token-comparable-btn')
+      .text(new_value)
+      .end() // .dropdown-comparable
+      .find('input')
+      .val(new_value);
+
+
+  // click on delete-button 
+  }).on('click', '.token-wrapper .token-delete', function(e) {
+    e.preventDefault();
+
+    $(this).parent().remove();
   });
   
 
@@ -141,8 +206,7 @@ $(function() {
     // send request on enter
     $('#' + inputID).focus().on('keydown', function(e) {
       
-      // on enter
-      if (e.keyCode == 13) {
+      if (e.keyCode == 13) { // key code for 'enter'
         $.ajax({
           url: url,
           
@@ -187,12 +251,50 @@ $(function() {
 
   // folder click adds token to search
   }).on('click', '.folder-links-wrapper a', function(e) {
-    // e.preventDefault();
-  
-    console.log('folder link clicked');
-    // TODO make function call that is also called on push state
-    // has to make/replace folder token, make new folder active, set hidden input etc.
+    e.preventDefault();
+
+    var $this = $(this);
+
+    // do nothing if user clicks on already active folder
+    if ($this.hasClass('active'))
+      return;
+
+    history.pushState(null, '', '/folder/' + $this.data('folder-id'));
+    changeActiveFolder();
+    // TODO loadSearchResults();
   });
+
+
+  // change active folder without reload
+  if ($tree.length > 0) {
+    var changeActiveFolder = function(folderID) {
+        
+        // find ID
+        if (isNaN(folderID)) {
+          var matches = window.location.href.match(/(\d)+\/?$/g);
+          folderID = !matches
+            ? $tree.find('a').eq(0).data('folder-id')
+            : matches[0];
+        }
+
+        // don't do anything if we don't have a not-active folder clicked
+        // possible reasons:
+        //   - popstate on load-event
+        //   - user clicks active folder
+        var oldFolderID = $tree.data('active-folder-id');
+        if (oldFolderID == folderID)
+          return;
+
+        // make new folder active on, set hidden input for search and upload
+        $('#folder' + oldFolderID).removeClass('active');
+        $tree.data('active-folder-id', folderID);
+        $('#folder' + folderID).addClass('active');
+        $('#folder_id').val(folderID);
+    };
+
+    // watch if we have to change folder on back
+    window.addEventListener('popstate', changeActiveFolder, false);
+  }
 
 
   /* INFINITE SCROLL
@@ -255,5 +357,8 @@ $(function() {
 
     // trigger initial scroll event
     }).scroll();
+
+    // TODO on new pictures loaded → set hasMore to true
+    // TODO make load more pictures function → loadSearchResults() → outsource to make available for others
   }
 });

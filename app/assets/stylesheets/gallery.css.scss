@@ -1,16 +1,37 @@
+/* SEARCH FIELD AND TOKENS */
+/* ------------------------------------------------------------------------ */
 .search-wrapper {display:block;}
+
 .token-wrapper {
-  margin-right:10px;
+  position:relative; padding-right:30px;
+
+  // placeholder
+  %small-size {font-size:12px; line-height:16px;}
 
   .dropdown {float:left;}
-  .add-on {height:16px; font-size:12px; line-height:16px;}
-  .token-input {@extend .add-on;}
-  .token-input {text-align:right;}
-  .token-btn {padding-left:6px; padding-right:6px; font-size:12px; line-height:16px;}
-  .caret {margin-top:6px;}
-  &.input-prepend .token-comparable-btn:first-child {border-radius:0;} // be that specific to overwrit ebootstrap defaults
-}
+  .dropdown-menu {
+    max-height:300px; overflow:auto;
 
+    a {@extend %small-size;}
+  }
+  .dropdown-menu-comparable {width:50px; min-width:0;}
+
+  .add-on {display:inline-block; height:16px; @extend %small-size;}
+  .token-input {@extend .add-on; text-align:center;}
+  .token-btn {padding-left:6px; padding-right:6px; @extend %small-size;}
+  .caret {margin-top:6px;}
+  .token-delete {display:none; position:absolute; top:3px; right:8px; width:16px; height:16px; padding:0; border-radius:50%; @extend %small-size;}
+  &:hover .token-delete {display:block;}
+  &.input-prepend .token-comparable-btn:first-child {border-radius:0;} // be that specific to overwrite bootstrap defaults
+
+  .hide {display:none;} // must be repeated to overwrite other specific styles
+} 
+
+.dropdown-menu-comparable a {text-align:center;}
+
+
+/* TREE */
+/* ------------------------------------------------------------------------ */
 .tree {
   margin-left:0;
 
@@ -24,8 +45,12 @@
 .folder-add {@extend .folder-remove; margin-left:8px;}
 .folder-links-wrapper {
   padding-right:60px;
+
   &:hover .btn-mini {display:inline;}
 }
 
+
+/* IMAGES PREVIEWS */
+/* ------------------------------------------------------------------------ */
 .show-folder-image-preview-wrapper {max-width:600px;}
 .show-folder-image-preview {display:block; float:left; width:100px; height:100px; margin:10px;}
