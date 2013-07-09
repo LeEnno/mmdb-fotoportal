@@ -3,15 +3,27 @@ class GalleryController < ApplicationController
 
   PICTURES_PER_PAGE = 5
 
+  # load pictures fr search/infinite scroll
   def search
+    page     = params[:page].to_i
+    offset   = (page - 1) * PICTURES_PER_PAGE
+
+    search_results  = get_search_results
+    @all_pics_count = search_results.count
+    @has_more       = @all_pics_count > offset + PICTURES_PER_PAGE
+    @pictures       = search_results.offset(offset).limit(PICTURES_PER_PAGE)
   end
+
 
   # show pictures of a folder (including upload field)
   def show_folder
     @folder = params[:folder_id].present? \
       ? Folder.find(params[:folder_id]) \
       : @user.root_folder
-    @pictures = @folder.all_pictures.slice(0, PICTURES_PER_PAGE)
+    
+    all_pictures    = @folder.all_pictures
+    @all_pics_count = all_pictures.count
+    @pictures       = all_pictures.slice(0, PICTURES_PER_PAGE)
   end
 
 
@@ -19,18 +31,6 @@ class GalleryController < ApplicationController
   def show_picture
     @picture = Picture.find(params[:picture_id])
     @user    = @picture.user
-  end
-
-
-  # load more pictures for infinite scroll
-  def load_more_pictures
-    page     = params[:page].to_i
-    folder   = Folder.find(params[:folder_id].to_i)
-    offset   = (page - 1) * PICTURES_PER_PAGE
-    all_pics = folder.all_pictures
-
-    @pictures = all_pics.slice(offset, PICTURES_PER_PAGE) || []
-    @has_more = all_pics.count > offset + PICTURES_PER_PAGE
   end
 
 
@@ -88,5 +88,74 @@ class GalleryController < ApplicationController
 
     # give an arbitrary response
     render :json => {:parent_id => parent.id}
+  end
+
+
+  # PRIVATE METHODS
+  # ------------------------------------------------------------------------------
+  
+  def get_search_results
+    join_tables   = []
+    where_fields  = []
+    where_values  = {}
+    operators     = params[:search_operators]
+
+    params[:search_params].each do |key, val|
+      
+      # dates
+      if key.in?('taken_at', 'created_at', 'updated_at')
+        matches = val.match(/^(\d{2}.)(\d{2}.)?(\d{2,4})$/)
+        val = Date.new(
+          matches[-1].to_i,
+          matches[-2].to_i,
+          (matches.length - 1) > 2 ? matches[-3].to_i : 1
+        )
+
+        where_fields << "#{key} #{operators[key + '_operator']} :#{key}"
+        where_values[key.to_sym] = val
+
+      # numerics
+      elsif key.in?('width', 'height', 'color_depth', 'filesize', 'height', 'focal_length', 'iso') || key =~ /^mean_/
+        where_fields << "#{key} #{operators[key + '_operator']} :#{key}"
+        where_values[key.to_sym] = val
+      
+      # specials
+      # TODO fix color_space
+      elsif key == 'color_space'
+        where_fields << "#{key} = :#{key}"
+        where_values[key.to_sym] = val
+      
+      elsif key == 'has_flash'
+        val = val == 'an' ? 1 : 0
+        where_fields << "#{key} = :#{key}"
+        where_values[key.to_sym] = val
+      
+      # exact strings
+      elsif key.in?('aperture', 'extension')
+        where_fields << "#{key} = :#{key}"
+        where_values[key.to_sym] = val
+
+      # like strings
+      elsif key.in?('title', 'location', 'camera')
+        val = "%#{val}%"
+        where_fields << "#{key} LIKE :#{key}"
+        where_values[key.to_sym] = val
+
+      # relations
+      elsif key.in?('keywords', 'persons')
+        join_tables << 'key'.to_sym
+
+      elsif key == 'folder_id'
+        where_fields << "#{key} IN (:#{key})"
+        where_values[key.to_sym] = Folder.find(val).children_ids
+      end
+    end
+
+    # search results
+    puts "huhu"
+    puts join_tables
+    puts where_fields.join(' AND ')
+    puts where_values
+    @user.pictures.joins(join_tables).where(where_fields.join(' AND '), where_values)
   end
 end

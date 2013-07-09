@@ -2,5 +2,6 @@
   "pictures": [
     <%= ('"' + image_previews_with_markup(@pictures).join('", "') + '"').html_safe %>
   ],
+  "allPicsCount": <%= @all_pics_count %>,
   "hasMore": <%= @has_more.to_s %>
 }

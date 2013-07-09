@@ -1,4 +1,3 @@
-<% @body_class = 'is-show-folder' %>
 <h1>Gallery#show_folder</h1>
 <p>Find me in app/views/gallery/show_folder.html.erb</p>
 
@@ -7,7 +6,7 @@
 <%= form_tag do %>
   <div class="input-append search-wrapper">
     <%= text_field_tag 'search', nil, :class => 'input-xxlarge' %>
-    <button class="btn" type="button">Go!</button>
+    <button class="btn">Go!</button>
   </div>
 
 <% end %>
@@ -22,7 +21,7 @@
 
 <%= folder_as_tree(@user.root_folder, @folder, true) %>
 
-<h2>Bilder</h2>
+<h2>Bilder (<span id="searchResultsCount"><%= @all_pics_count %></span>)</h2>
 
 <div id='show-folder-image-previews' class='show-folder-image-preview-wrapper clearfix' data-folder-id='<%= @folder.id %>'>
   <%= image_previews_with_markup(@pictures).join(' ').html_safe %>

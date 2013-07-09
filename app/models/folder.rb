@@ -13,4 +13,13 @@ class Folder < ActiveRecord::Base
     end
     pics
   end
+
+
+  def children_ids
+    ids = [id]
+    self.children.each do |f|
+      ids += f.children_ids
+    end
+    ids
+  end
 end

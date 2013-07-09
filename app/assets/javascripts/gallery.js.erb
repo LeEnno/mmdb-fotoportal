@@ -1,5 +1,3 @@
-// TODO make folder click to token
-
 $(function() {
 
   // add Permalink to uploaded photo
@@ -15,33 +13,33 @@ $(function() {
       sourceListMarkup = '',
 
       sourceObj        = { // order = priority
-        Aufnahmedatum:    {name: 'taken_at',     regex: /^(\d{2}.){2}.\d{2,4}$/,    comparable: true},
-        'Upload-Datum':   {name: 'created_at',   regex: /^(\d{2}.){2}.\d{2,4}$/,    comparable: true},
-        'Update-Datum':   {name: 'updated_at',   regex: /^(\d{2}.){2}.\d{2,4}$/,    comparable: true},
-        Breite:           {name: 'width',        regex: /^\d{3,}$/,    unit: 'px',  comparable: true},
-        "Höhe":           {name: 'height',       regex: /^\d{3,}$/,    unit: 'px',  comparable: true},
-        Farbtiefe:        {name: 'color_depth',  regex: /^(8|16|24)$/, unit: 'Bit', comparable: true},
-        "Dateigröße":     {name: 'filesize',     regex: /^\d+$/,       unit: 'MB',  comparable: true},
-        Belichtungszeit:  {name: 'height',       regex: /^\d+.?\d+$/,  unit: 's',   comparable: true},
-        Brennweite:       {name: 'focal_length', regex: /^\d{2,}$/,    unit: 'mm',  comparable: true},
+        Aufnahmedatum:    {name: 'taken_at',     regex: /^(\d{2}.){2}.\d{2,4}$/,      comparable: true},
+        'Upload-Datum':   {name: 'created_at',   regex: /^(\d{2}.){2}.\d{2,4}$/,      comparable: true},
+        'Update-Datum':   {name: 'updated_at',   regex: /^(\d{2}.){2}.\d{2,4}$/,      comparable: true},
+        Breite:           {name: 'width',        regex: /^\d{3,}$/,    unit: 'px',    comparable: true},
+        "Höhe":           {name: 'height',       regex: /^\d{3,}$/,    unit: 'px',    comparable: true},
+        Farbtiefe:        {name: 'color_depth',  regex: /^(8|16|24)$/, unit: 'Bit',   comparable: true},
+        "Dateigröße":     {name: 'filesize',     regex: /^\d+$/,       unit: 'Bytes', comparable: true},
+        Belichtungszeit:  {name: 'height',       regex: /^\d+.?\d+$/,  unit: 's',     comparable: true},
+        Brennweite:       {name: 'focal_length', regex: /^\d{2,}$/,    unit: 'mm',    comparable: true},
         Blende:           {name: 'aperture',     regex: /^\d+.?\d+$/}, // not sure about this
-        ISO:              {name: 'iso',          regex: /^\d{3,4}$/,                comparable: true},
-        'Rot-Anteil':     {name: 'mean_red',     regex: /^\d{2}$/,     unit: '%',   comparable: true},
-        'Grün-Anteil':    {name: 'mean_green',   regex: /^\d{2}$/,     unit: '%',   comparable: true},
-        'Blau-Anteil':    {name: 'mean_blue',    regex: /^\d{2}$/,     unit: '%',   comparable: true},
-        'Gelb-Anteil':    {name: 'mean_yellow',  regex: /^\d{2}$/,     unit: '%',   comparable: true},
-        'Orange-Anteil':  {name: 'mean_orange',  regex: /^\d{2}$/,     unit: '%',   comparable: true},
-        'Violett-Anteil': {name: 'mean_violet',  regex: /^\d{2}$/,     unit: '%',   comparable: true},
-        'Magenta-Anteil': {name: 'mean_magenta', regex: /^\d{2}$/,     unit: '%',   comparable: true},
-        'Cyan-Anteil':    {name: 'mean_cyan',    regex: /^\d{2}$/,     unit: '%',   comparable: true},
-        'Braun-Anteil':   {name: 'mean_brown',   regex: /^\d{2}$/,     unit: '%',   comparable: true},
-        'Weiß-Anteil':    {name: 'mean_white',   regex: /^\d{2}$/,     unit: '%',   comparable: true},
-        'Schwarz-Anteil': {name: 'mean_black',   regex: /^\d{2}$/,     unit: '%',   comparable: true},
+        ISO:              {name: 'iso',          regex: /^\d{3,4}$/,                  comparable: true},
+        'Rot-Anteil':     {name: 'mean_red',     regex: /^\d{2}$/,     unit: '%',     comparable: true},
+        'Grün-Anteil':    {name: 'mean_green',   regex: /^\d{2}$/,     unit: '%',     comparable: true},
+        'Blau-Anteil':    {name: 'mean_blue',    regex: /^\d{2}$/,     unit: '%',     comparable: true},
+        'Gelb-Anteil':    {name: 'mean_yellow',  regex: /^\d{2}$/,     unit: '%',     comparable: true},
+        'Orange-Anteil':  {name: 'mean_orange',  regex: /^\d{2}$/,     unit: '%',     comparable: true},
+        'Violett-Anteil': {name: 'mean_violet',  regex: /^\d{2}$/,     unit: '%',     comparable: true},
+        'Magenta-Anteil': {name: 'mean_magenta', regex: /^\d{2}$/,     unit: '%',     comparable: true},
+        'Cyan-Anteil':    {name: 'mean_cyan',    regex: /^\d{2}$/,     unit: '%',     comparable: true},
+        'Braun-Anteil':   {name: 'mean_brown',   regex: /^\d{2}$/,     unit: '%',     comparable: true},
+        'Weiß-Anteil':    {name: 'mean_white',   regex: /^\d{2}$/,     unit: '%',     comparable: true},
+        'Schwarz-Anteil': {name: 'mean_black',   regex: /^\d{2}$/,     unit: '%',     comparable: true},
         Farbraum:         {name: 'color_space',  regex: /^(RGB|sRGB)$/,},
         Blitz:            {name: 'has_flash',    regex: /^(an|aus)$/},
         Dateityp:         {name: 'extension',    regex: /^(jpe?g|png|gif)$/i},
         Bildtitel:        {name: 'title',        regex: /^.+$/},
-        Ort:              {name: 'camera',       regex: /^.+$/},
+        Ort:              {name: 'location',     regex: /^.+$/},
         Keyword:          {name: 'keywords',     regex: /^.+$/},
         Person:           {name: 'persons',      regex: /^[^\d]+$/},
         Kameramodell:     {name: 'camera',       regex: /^.+$/}
@@ -78,7 +76,7 @@ $(function() {
             '<div class="input-prepend ' + (hasUnit ? 'input-append ' : '') + 'token-wrapper">' +
               '<div class="btn-group">' +
                 '<div class="dropdown">' +
-                  '<button class="btn btn-primary token-btn dropdown-toggle" data-toggle="dropdown">' +
+                  '<button class="btn btn-primary token-btn dropdown-toggle" data-toggle="dropdown" type="button">' +
                     '##tokenTitle## ' + // leave the space in there so .caret gets some distance
                     '<span class="caret"></span>' +
                   '</button>' +
@@ -87,7 +85,7 @@ $(function() {
                   '</ul>' +
                 '</div>' +
                 '<div class="dropdown dropdown-comparable' + (!!sourceObj[title].comparable ? '' : ' hide') + '">' +
-                  '<button class="btn token-btn token-comparable-btn dropdown-toggle" data-toggle="dropdown">=</button>' +
+                  '<button class="btn token-btn token-comparable-btn dropdown-toggle" data-toggle="dropdown" type="button">=</button>' +
                   '<ul class="dropdown-menu dropdown-menu-comparable">' + 
                     '<li><a href="#">≤</a></li>' +
                     '<li><a href="#">=</a></li>' +
@@ -113,6 +111,7 @@ $(function() {
           .replace(/##inputName##/g, sourceObj[title].name);
 
       $(template).insertBefore('.search-wrapper');
+      loadSearchResults();
 
       return ''; // empty input
     }
@@ -155,6 +154,8 @@ $(function() {
       // toggle 'input-append'-class for unit
       .closest('.input-prepend')
       .toggleClass('input-append', !!obj.unit);
+
+    loadSearchResults();
   
 
   // click on list element in comparator updates comparator (button and input)
@@ -162,28 +163,128 @@ $(function() {
     e.preventDefault();
 
     var $this     = $(this),
-        new_value = $this.text();
+        new_value = $this.text(),
+        db_value  = new_value;
 
+    // convert so mysql understands us
+    if (new_value == '≥')
+      db_value = '>=';
+    if (new_value == '≤')
+      db_value = '<=';
+
+    // update button text and hidden input value
     $this.closest('.dropdown-comparable')
       .find('.token-comparable-btn')
       .text(new_value)
       .end() // .dropdown-comparable
       .find('input')
-      .val(new_value);
+      .val(db_value);
+
+    loadSearchResults();
 
 
   // click on delete-button 
   }).on('click', '.token-wrapper .token-delete', function(e) {
     e.preventDefault();
-
     $(this).parent().remove();
+    loadSearchResults();
+
+
+  // submit on value change
+  }).on('focus', '.token-input', function() {
+    var $this     = $(this);
+        valBefore = $this.val();
+
+    $this.one('blur', function() {
+      if ($this.val() != valBefore)
+        loadSearchResults();
+    });
+
+
+  // submit search form on button-click or enter-press
+  }).on('click', '.search-wrapper .btn', function(e) { // submit button
+    e.preventDefault();
+    loadSearchResults();
+
+  }).on('submit', function(e) { // form (i.e. submit via enter)
+    e.preventDefault();
+    loadSearchResults();
   });
+
+
+
+  /* AJAX SEARCH
+   * -----------------------------------------------------------------------------
+   */
+  var loadSearchResults = function(increasePage) {
+    var searchParams    = {},
+        searchOperators = {}
+        isNewSearch     = !increasePage;
+    
+    page = !!increasePage ? ++page : 1;
+    searchParams['folder_id'] = $('#folder_id').val();
+
+    $('.token-input').each(function(i, el) {
+      var $el = $(el);
+      searchParams[$el.prop('name')] = $el.val();
+    });
+    $('.dropdown-comparable:visible input').each(function(i, el) {
+      var $el = $(el);
+      searchOperators[$el.prop('name')] = $el.val();
+    });
+
+    $.ajax({
+      url: '<%= MmdbFotoportal::Application.routes.url_helpers.search_path(:format => :json) %>',
+      data: {
+        search_params:    searchParams,
+        search_operators: searchOperators,
+        page:             page
+      },
+
+      error: function(e) {
+        console.log("error", e);
+      },
+
+      success: function(data) {
+        var html          = data.pictures,
+            $target       = $('#show-folder-image-previews'),
+            $noMoreImages = $('#noMoreImages');
+        
+        // append or replace search results
+        if (isNewSearch) {
+          $target.html(html);
+          $('#searchResultsCount').text(data.allPicsCount);
+        } else
+          $target.append(html);
+        
+        // "no more images"-hint
+        if (hasMore = data.hasMore) // assignment is intended!
+          $noMoreImages.remove();
+        else if ($noMoreImages.length < 1)
+          $target.after('<p id="noMoreImages">Keine weiteren Fotos für die aktuelle Suche</p>');
+      },
+
+      beforeSend: function() {
+        isLoading = true;
+      },
+
+      complete: function() {
+        updatePreviewsBottom();
+        isLoading = false;
+
+        // trigger scroll event in case window height is too low (so it is
+        // not yet scrollable)
+        $(window).scroll();
+      }
+    }); // end $.ajax
+  }; // end loadSearchResults
   
+
 
   /* FOLDER ADD AND REMOVE
    * ---------------------------------------------------------------------------
    */
-  var $tree = $('#navFolderTree');
+  var $tree         = $('#navFolderTree');
 
   // add folder
   $tree.on('click', '.folder-add', function(e) {
@@ -261,104 +362,75 @@ $(function() {
 
     history.pushState(null, '', '/folder/' + $this.data('folder-id'));
     changeActiveFolder();
-    // TODO loadSearchResults();
   });
 
 
-  // change active folder without reload
+  // only on gallery page
   if ($tree.length > 0) {
+
+    // change active folder without reload
     var changeActiveFolder = function(folderID) {
         
-        // find ID
-        if (isNaN(folderID)) {
-          var matches = window.location.href.match(/(\d)+\/?$/g);
-          folderID = !matches
-            ? $tree.find('a').eq(0).data('folder-id')
-            : matches[0];
-        }
+      // find ID
+      if (isNaN(folderID)) {
+        var matches = window.location.href.match(/(\d)+\/?$/g);
+        folderID = !matches
+          ? $tree.find('a').eq(0).data('folder-id')
+          : matches[0];
+      }
 
-        // don't do anything if we don't have a not-active folder clicked
-        // possible reasons:
-        //   - popstate on load-event
-        //   - user clicks active folder
-        var oldFolderID = $tree.data('active-folder-id');
-        if (oldFolderID == folderID)
-          return;
+      // don't do anything if we don't have a not-active folder clicked
+      // possible reasons:
+      //   - popstate on load-event
+      //   - user clicks active folder
+      var oldFolderID = $tree.data('active-folder-id');
+      if (oldFolderID == folderID)
+        return;
 
-        // make new folder active on, set hidden input for search and upload
-        $('#folder' + oldFolderID).removeClass('active');
-        $tree.data('active-folder-id', folderID);
-        $('#folder' + folderID).addClass('active');
-        $('#folder_id').val(folderID);
+      // make new folder active on, set hidden input for search and upload
+      $('#folder' + oldFolderID).removeClass('active');
+      $tree.data('active-folder-id', folderID);
+      $('#folder' + folderID).addClass('active');
+      $('#folder_id').val(folderID);
+
+      // new folder means new search results
+      loadSearchResults();
     };
 
-    // watch if we have to change folder on back
+    // watch if we have to change folder on history-back
     window.addEventListener('popstate', changeActiveFolder, false);
-  }
 
 
-  /* INFINITE SCROLL
-   * ---------------------------------------------------------------------------
-   */
-  if ($('.is-show-folder').length > 0) {
-    var $previews            = $('#show-folder-image-previews'),
-        folderID             = $previews.data('folder-id'),
-        page                 = 1,
-        isLoading            = false,
-        hasMore              = true,
 
-        // currecnt scroll position
+    /* INFINITE SCROLL
+     * ---------------------------------------------------------------------------
+     */
+    var $previews = $('#show-folder-image-previews'),
+        page      = 1,
+        isLoading = false,
+        hasMore   = true,
+
+        // current scroll position
         previewsBottom       = 0,
         updatePreviewsBottom = function() {
           previewsBottom = $previews.height() + $previews.offset().top;
         };
-        updatePreviewsBottom();
+    
+    updatePreviewsBottom();
 
     // scroll event listener
     $(window).scroll(function() {
       if (!isLoading && hasMore && window.scrollY + window.innerHeight >= previewsBottom) {
-        isLoading = true;
-
-        $.ajax({
-          url: '<%= MmdbFotoportal::Application.routes.url_helpers.load_more_pictures_path(:format => :json) %>',
-          data: {
-            page:      ++page,
-            folder_id: folderID
-          },
-
-          error: function(e) {
-            console.log("error", e);
-          },
-
-          success: function(data) {
-            var html    = '',
-                $target = $('#show-folder-image-previews');
-            
-            for (var i = 0; i < data.pictures.length; i++) {
-              html += data.pictures[i];
-            };
-            $target.append(html);
-            
-            hasMore = data.hasMore;
-            if (!hasMore)
-              $target.after('<p>Keine weiteren Fotos in diesem Ordner</p>');
-          },
-
-          complete: function() {
-            updatePreviewsBottom();
-            isLoading = false;
-
-            // trigger scroll event in case window height is too low (so it is
-            // not yet scrollable)
-            $(window).scroll();
-          }
-        });
+        loadSearchResults(true);
       }
+
+    // trigger scroll on resize
+    }).on('resize', function() {
+      updatePreviewsBottom();
+      $(this).scroll();
 
     // trigger initial scroll event
     }).scroll();
 
-    // TODO on new pictures loaded → set hasMore to true
-    // TODO make load more pictures function → loadSearchResults() → outsource to make available for others
-  }
+  } // end only on gallery page
 });
