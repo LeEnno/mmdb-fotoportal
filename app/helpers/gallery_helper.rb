@@ -24,11 +24,11 @@ module GalleryHelper
 
     folder_name = (folder.name || ('Alle Fotos' if is_root) || 'unbenannt') + " (#{folder.all_pictures.count})"
     folder_link = is_root ? gallery_path : folder_path(:folder_id => folder.id)
-    out += link_to(folder_name, folder_link, :class => ('active' if is_active), :id => "folder#{folder.id}", :'data-folder-id' => folder.id)
+    out += link_to(folder_name, folder_link, :class => 'folder-link' + (is_active ? ' active' : ''), :id => "folder#{folder.id}", :'data-folder-id' => folder.id)
     out += link_to('+', new_folder_path(:parent_id => folder.id), :class => 'btn btn-mini btn-success folder-add')
     out += link_to('-', delete_folder_path(:folder_id => folder.id), :class => 'btn btn-mini btn-danger folder-remove') if !is_root
     
-    out = content_tag :span, out.html_safe, :class => 'folder-links-wrapper'
+    out = content_tag :span, out.html_safe, :class => 'folder-link-wrapper'
     
     folder.children.each do |c|
       out += folder_as_tree(c, active_folder)

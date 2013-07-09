@@ -127,7 +127,7 @@ $(function() {
         obj       = sourceObj[title];
     
     // show new title
-    $this.parents('.dropdown-menu-search-key').siblings('button')
+    $this.closest('.dropdown-menu-search-key').siblings('button')
       .text(title + ' ')
       .append('<span class="caret"></span>')
       
@@ -342,16 +342,24 @@ $(function() {
       success: function(data) {
         var $li = $this.closest('li');
 
+        // if folder was active: simulate click on parent so we have a valid
+        // active folder
         if ($li.find('a.active').length > 0)
           $('#folder' + data.parent_id).click();
+        
+        // we at least have to make sure search results are reloaded
+        // (some pictures, that are currently shown could have been deleted)
         else
-          $li.remove();
+          loadSearchResults();
+
+        // delete folder list item
+        $li.remove();
       }
     });
 
 
-  // folder click adds token to search
-  }).on('click', '.folder-links-wrapper a', function(e) {
+  // folder click changes URL
+  }).on('click', '.folder-link', function(e) {
     e.preventDefault();
 
     var $this = $(this);

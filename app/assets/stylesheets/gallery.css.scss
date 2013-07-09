@@ -43,7 +43,7 @@
 
 .folder-remove {display:none; margin:0 4px;}
 .folder-add {@extend .folder-remove; margin-left:8px;}
-.folder-links-wrapper {
+.folder-link-wrapper {
   padding-right:60px;
 
   &:hover .btn-mini {display:inline;}
