@@ -143,7 +143,9 @@ class GalleryController < ApplicationController
 
       # relations
       elsif key.in?('keywords', 'persons')
-        join_tables << 'key'.to_sym
+        join_tables << key.to_sym
+        where_fields << "#{key}.name = :#{key}"
+        where_values[key.to_sym] = val
 
       elsif key == 'folder_id'
         where_fields << "#{key} IN (:#{key})"
