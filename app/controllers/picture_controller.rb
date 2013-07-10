@@ -20,7 +20,7 @@ class PictureController < ApplicationController
   end
 
 
-  # EDIT PERSONS, FOLDERS AND KEYWORDS VIA AJAX
+  # EDIT PERSONS, KEYWORDS, TITLE AND FOLDERS VIA AJAX
   # ----------------------------------------------------------------------------
   # 
   # params[:picture][:person] is array
@@ -76,6 +76,7 @@ class PictureController < ApplicationController
 
 
     # save folder and changes
+    @picture.title      = params[:picture][:title] if params[:picture][:title].present?
     @picture.folder     = Folder.find(params[:picture][:folder])
     @picture.updated_at = Time.now
     @picture.save

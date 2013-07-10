@@ -22,7 +22,7 @@ module GalleryHelper
 
     out = content_tag :i, nil, :class => 'icon-folder-' + (is_active ? 'open' : 'close')
 
-    folder_name = (folder.name || ('Alle Fotos' if is_root) || 'unbenannt') + " (#{folder.all_pictures.count})"
+    folder_name = (folder.name || 'unbenannt') + " (#{folder.all_pictures.count})"
     folder_link = is_root ? gallery_path : folder_path(:folder_id => folder.id)
     out += link_to(folder_name, folder_link, :class => 'folder-link' + (is_active ? ' active' : ''), :id => "folder#{folder.id}", :'data-folder-id' => folder.id)
     out += link_to('+', new_folder_path(:parent_id => folder.id), :class => 'btn btn-mini btn-success folder-add')

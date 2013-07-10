@@ -25,7 +25,7 @@ class UserController < ApplicationController
 
     if @user.valid?
       @user.save
-      Folder.create(:user => @user)
+      Folder.create(:user => @user, :name => 'Alle Fotos')
       create_session_and_redirect
     end
   end

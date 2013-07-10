@@ -66,7 +66,7 @@ $(function() {
 
 
 
-  /* EVENT LISTENER FOR FORM AND ITS INPUTS
+  /* AJAX--LISTENER FOR FORM AND SUBMIT-TRIGGER FOR ITS INPUTS
    * -----------------------------------------------------------------------------
    */
 
@@ -90,14 +90,48 @@ $(function() {
   // blur input and submit form on enter (dunno why doesn't automatically)
   }).on('keydown', 'input', function(e) {
       if (e.keyCode == 13) { // 13 = Enter key
-        $(this).blur();
-        $pictureForm.submit();
+        var $this = $(this).blur();
+
+        // prevent double submit
+        if ($this.attr('id') != 'picture_title')
+          $pictureForm.submit();
       }
 
 
   // submit form on folder change
   }).on('change', 'select', function() {
     $pictureForm.submit();
+  });
+
+
+  /* EDIT TITLE
+   * -----------------------------------------------------------------------------
+   */
+  var $editBtn    = $('#ediPicturetTitle'),
+      $editIcon   = $editBtn.find('i'),
+      $titleSpan  = $('#spanPictureTitle'),
+      $titleInput = $('#picture_title'),
+      endEdit     = function() {
+        $editIcon.toggleClass('icon-pencil icon-ok');
+        $pictureForm.submit();
+        $titleSpan.text(
+          $titleInput.hide().val()
+        ).show();
+      };
+
+  // if edit-button is clicked hide span and show input
+  $editBtn.on('click', function(e) {
+    e.preventDefault();
+    if ($editIcon.hasClass('icon-pencil')) {
+      $editIcon.toggleClass('icon-pencil icon-ok');
+      $titleSpan.hide();
+      $titleInput.show().focus();
+    }
+  });
+
+  // catch submits in blur and enter
+  $titleInput.on('blur', function() {
+    endEdit();
   });
 });
 

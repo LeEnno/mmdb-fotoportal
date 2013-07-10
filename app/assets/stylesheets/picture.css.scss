@@ -1,3 +1,3 @@
-// Place all the styles related to the photo controller here.
-// They will automatically be included in application.css.
-// You can use Sass (SCSS) here: http://sass-lang.com/
+input.input-picture-title, // be that specific to overwrite bootstrap defaults
+.btn-edit-picture-title {display:none;}
+.picture-title-wrapper:hover .btn-edit-picture-title {display:inline-block;}
