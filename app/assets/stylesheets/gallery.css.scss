@@ -1,5 +1,14 @@
+/* GRID */
+/* ------------------------------------------------------------------------ */
+.container-gallery {position:relative; width:600px;}
+.tab-content {overflow:visible;}
+.tree-wrapper {position:absolute; top:190px; left:-250px; width:250px;}
+.affix {position:fixed; top:0;}
+
+
 /* SEARCH FIELD AND TOKENS */
 /* ------------------------------------------------------------------------ */
+.search-form {margin:24px 0 40px;}
 .search-wrapper {display:block;}
 
 .token-wrapper {
@@ -35,8 +44,7 @@
 .tree {
   margin-left:0;
 
-  ul {list-style:none;}
-  li {line-height:24px;}
+  li {list-style:none; line-height:24px;}
   .active {font-weight:bold;}
   i {margin-right:4px;}
 }

@@ -1,28 +1,49 @@
-<h1>Gallery#show_folder</h1>
-<p>Find me in app/views/gallery/show_folder.html.erb</p>
+<div class="alert alert-danger logout">
+  <a href="<%= logout_path %>" class="text-error">Logout</a>
+</div>
 
-<h2>Suche</h2>
+<div class="container container-gallery">
+  <h1>Galerie</h1>
 
-<%= form_tag do %>
-  <div class="input-append search-wrapper">
-    <%= text_field_tag 'search', nil, :class => 'input-xxlarge' %>
-    <button class="btn">Go!</button>
+  <div class="tree-wrapper">
+    <div data-spy="affix" data-offset-top="190">
+      <h2>Ordner</h2>
+
+      <%= folder_as_tree(@user.root_folder, @folder, true) %>
+    </div>
   </div>
+  
+  <ul class="nav nav-tabs">
+    <li class="active"><a href="#tab-search" data-toggle="tab">Suche</a></li>
+    <li><a href="#tab-upload" data-toggle="tab">Upload</a></li>
+  </ul>
 
-<% end %>
+  <div class="tab-content">
+    <div id="tab-search" class="tab-pane active">
+      <h2>Suche</h2>
 
-<h2>Upload</h2>
+      <%= form_tag nil, :class => 'search-form' do %>
+        <div class="input-append search-wrapper">
+          <%= text_field_tag 'search', nil, :class => 'input-xxlarge' %>
+          <button class="btn">Go!</button>
+        </div>
+      <% end %>
 
-<%= form_tag upload_path, :class => 'dropzone' do %> <%# TODO fix class name #%>
-  <%= hidden_field :folder, :id %>
-<% end %>
 
-<h2>Ordner</h2>
+      <h2>Bilder (<span id="searchResultsCount"><%= @all_pics_count %></span>)</h2>
 
-<%= folder_as_tree(@user.root_folder, @folder, true) %>
+      <div id='show-folder-image-previews' class='show-folder-image-preview-wrapper clearfix' data-folder-id='<%= @folder.id %>'>
+        <%= image_previews_with_markup(@pictures).join(' ').html_safe %>
+      </div>
+    </div> <%# /#tab-search #%>
 
-<h2>Bilder (<span id="searchResultsCount"><%= @all_pics_count %></span>)</h2>
 
-<div id='show-folder-image-previews' class='show-folder-image-preview-wrapper clearfix' data-folder-id='<%= @folder.id %>'>
-  <%= image_previews_with_markup(@pictures).join(' ').html_safe %>
+    <div id="tab-upload" class="tab-pane">
+      <h2>Upload</h2>
+
+      <%= form_tag upload_path, :class => 'dropzone' do %> <%# TODO fix class name #%>
+        <%= hidden_field :folder, :id %>
+      <% end %>
+    </div>
+  </div> <%# /.tab-content #%>
 </div>

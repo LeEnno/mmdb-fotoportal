@@ -1,34 +1,42 @@
-<h1>User#register</h1>
-<p>Find me in app/views/user/register.html.erb</p>
+<div class="container container-register">
+  <h1>Registrieren</h1>
 
-<% if @user && @user.errors.count > 0 %>
-  <ul>
-    <% @user.errors.full_messages.each do |message| %>
-      <li><%= message %></li>
-    <% end %>
-  </ul>
-<% end %>
+  <% if @user && @user.errors.count > 0 %>
+    <ul class="alert alert-danger">
+      <% @user.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  <% end %>
 
-<%= form_tag do %>
-  <%= label(:user, :firstname, 'Vorname') %>
-  <%= text_field(:user, :firstname) %>
-  <br />
+  <%= form_tag nil, :class => 'form-horizontal' do %>
+    
+    <%= form_horizontal_group(
+      label(:user, :firstname, 'Vorname', :class => 'control-label'),
+      text_field(:user, :firstname)
+    ) %>
 
-  <%= label(:user, :surname, 'Nachname') %>
-  <%= text_field(:user, :surname) %>
-  <br />
+    <%= form_horizontal_group(
+      label(:user, :surname, 'Nachname', :class => 'control-label'),
+      text_field(:user, :surname)
+    ) %>
+    
+    <%= form_horizontal_group(
+      label(:user, :email, 'Email-Adresse', :class => 'control-label'),  
+      email_field(:user, :email)
+    ) %>
+    
+    <%= form_horizontal_group(
+      label(:user, :password, 'Passwort', :class => 'control-label'),  
+      password_field(:user, :password)
+    ) %>
 
-  <%= label(:user, :email, 'Email-Adresse') %>
-  <%= email_field(:user, :email) %>
-  <br />
+    <%= form_horizontal_group(
+      label(:user, :password_confirmation, 'Passwort wiederholen', :class => 'control-label'),  
+      password_field(:user, :password_confirmation)
+    ) %>
 
-  <%= label(:user, :password, 'Passwort') %>
-  <%= password_field(:user, :password) %>
-  <br />
-
-  <%= label(:user, :password_confirmation, 'Passwort wiederholen') %>
-  <%= password_field(:user, :password_confirmation) %>
-  <br />
-
-  <%= submit_tag('Registrieren') %>
-<% end %>
+    <%= submit_tag('Registrieren', :class => 'btn btn-success btn-large') %>
+    
+  <% end %>
+</div>

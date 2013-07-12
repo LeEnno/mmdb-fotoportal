@@ -1,3 +1,26 @@
-input.input-picture-title, // be that specific to overwrite bootstrap defaults
-.btn-edit-picture-title {display:none;}
+.single-image {display:block; max-width:640px; margin:0 auto 40px; padding:8px; box-shadow:0 1px 5px #888;}
+
+.found-image {position:absolute; border:1px solid red;}
+.input-face-detection {position:relative;}
+
+.list-picture-properties {
+  margin-left:0; list-style:none;
+
+  .control-label {padding-top:0; width:120px; font-weight:bold;}
+  .controls {margin-left:140px;}
+}
+
+.content-picture-title {word-wrap: break-word;}
+.btn-edit-picture-title {display:none; margin-left:4px;}
+input.input-picture-title {display:none; width:144px; margin-bottom:4px;} // be that specific to overwrite bootstrap defaults
 .picture-title-wrapper:hover .btn-edit-picture-title {display:inline-block;}
+.picture-title-wrapper:hover .btn-edit-picture-title.edit-mode-enabled {display:none;}
+
+.metadata-by-user {
+  .control-label {width:80px; margin-top:5px;}
+  .controls {margin-left:100px;}
+  input {width:186px;}
+  select {width:200px;}
+}
+
+.btn-back-to-gallery {display:block; width:200px; margin:50px auto;}

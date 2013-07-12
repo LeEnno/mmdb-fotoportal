@@ -1,14 +1,26 @@
-<h1>User#login</h1>
-<p>Find me in app/views/user/login.html.erb</p>
+<div class="container container-login">
+  <h1>Login</h1>
 
-<%= form_tag do %>
-  <%= label(:user, :email, 'Email-Adresse') %>
-  <%= email_field(:user, :email) %>
-  <br />
+  
+  <%- flash.each do |name, message| %>
+    <ul class="alert alert-<%= name == 'error' ? 'error' : 'block' %>">
+      <li><%= message %></li>
+    </ul>
+  <% end %>
 
-  <%= label(:user, :password, 'Passwort') %>
-  <%= password_field(:user, :password) %>
-  <br />
 
-  <%= submit_tag('Einloggen') %>
-<% end %>
+  <%= form_tag nil, :class => 'form-horizontal' do %>
+
+    <%= form_horizontal_group(
+      label(:user, :email, 'Email-Adresse', :class => 'control-label'),
+      email_field(:user, :email)
+    ) %>
+
+    <%= form_horizontal_group(
+      label(:user, :password, 'Passwort', :class => 'control-label'),
+      password_field(:user, :password)
+    ) %>
+
+    <%= submit_tag('Einloggen', :class => 'btn btn-success btn-large') %>
+  <% end %>
+</div>

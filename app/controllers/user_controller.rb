@@ -33,6 +33,8 @@ class UserController < ApplicationController
   
   def logout
     Session.delete(session[:id])
+    flash[:notice] = 'erfolgreich ausgeloggt'
+    redirect_to login_path
   end
 
 
@@ -42,14 +44,10 @@ class UserController < ApplicationController
 
   def create_session_and_redirect
     session[:id] = Session.create(:user => @user).id
-    redirect_to_gallery
-  end
-
-  def redirect_to_gallery
     redirect_to gallery_path
   end
 
   def redirect_if_authenticated
-    redirect_to_gallery if @is_logged_in
+    redirect_to gallery_path if @is_logged_in
   end
 end

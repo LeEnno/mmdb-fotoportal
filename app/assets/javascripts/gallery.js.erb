@@ -261,7 +261,7 @@ $(function() {
         if (hasMore = data.hasMore) // assignment is intended!
           $noMoreImages.remove();
         else if ($noMoreImages.length < 1)
-          $target.after('<p id="noMoreImages">Keine weiteren Fotos für die aktuelle Suche</p>');
+          $target.after('<p id="noMoreImages" class="alert">Keine weiteren Fotos für die aktuelle Suche</p>');
       },
 
       beforeSend: function() {

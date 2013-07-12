@@ -108,11 +108,10 @@ $(function() {
    * -----------------------------------------------------------------------------
    */
   var $editBtn    = $('#ediPicturetTitle'),
-      $editIcon   = $editBtn.find('i'),
       $titleSpan  = $('#spanPictureTitle'),
       $titleInput = $('#picture_title'),
       endEdit     = function() {
-        $editIcon.toggleClass('icon-pencil icon-ok');
+        $editBtn.removeClass('edit-mode-enabled');
         $pictureForm.submit();
         $titleSpan.text(
           $titleInput.hide().val()
@@ -122,8 +121,8 @@ $(function() {
   // if edit-button is clicked hide span and show input
   $editBtn.on('click', function(e) {
     e.preventDefault();
-    if ($editIcon.hasClass('icon-pencil')) {
-      $editIcon.toggleClass('icon-pencil icon-ok');
+    if (!$editBtn.hasClass('edit-mode-enabled')) {
+      $editBtn.addClass('edit-mode-enabled');
       $titleSpan.hide();
       $titleInput.show().focus();
     }

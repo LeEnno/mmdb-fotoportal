@@ -1,3 +1,10 @@
-// Place all the styles related to the user controller here.
-// They will automatically be included in application.css.
-// You can use Sass (SCSS) here: http://sass-lang.com/
+.container-register,
+.container-login {
+  width:360px;
+
+  input {width:166px;} // 180 - 2x7
+  input[type="submit"] {display:block; width:160px; margin:40px auto 0;}
+}
+
+ul.alert-danger,
+ul.alert-block {margin-left:0; padding-left:30px;}

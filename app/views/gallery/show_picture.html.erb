@@ -1,51 +1,73 @@
-<h1>Gallery#show_picture</h1>
-<p>Find me in app/views/gallery/show_picture.html.erb</p>
+<div class="container">
+  <h1><%= @picture.title %></h1>
 
-<%= form_tag edit_picture_path(:picture_id => @picture.id),
-             :method => :post,
-             :id => 'form-picture-edit',
-             :remote => true do %>
+  <%= form_tag edit_picture_path(:picture_id => @picture.id),
+               :method => :post,
+               :id => 'form-picture-edit',
+               :remote => true do %>
 
-  <%= hidden_field :picture, :id %>
-  <%= hidden_field_tag 'user[faces_and_keywords]',
-                       load_faces_and_keywords_url(
-                         :user_id => @user.id,
-                         :format  => :json
-                       ) %>
+    <%= hidden_field :picture, :id %>
+    <%= hidden_field_tag 'user[faces_and_keywords]',
+                         load_faces_and_keywords_url(
+                           :user_id => @user.id,
+                           :format  => :json
+                         ) %>
 
-  <%= image_tag @picture.file_url('medium'),
-                :width => 300,
-                :class => (@picture.facedetect? ? 'do-facedetect' : '') %>
+    <%= image_tag @picture.file_url('medium'),
+                  :class => 'single-image' + (@picture.facedetect? ? ' do-facedetect' : '') %>
 
-  <ul>
-    <li class="picture-title-wrapper">
-      Titel: <span id="spanPictureTitle"><%= @picture.title || '–' %></span>
-      <%= text_field 'picture', 'title', :class => 'input-picture-title' %>
-      <a id="ediPicturetTitle" href="#" class="btn btn-mini btn-edit-picture-title"><i class="icon icon-pencil"></i></a>
-    </li>
-    <li>Breite: <%= @picture.width || '–' %></li> <%# TODO px #%>
-    <li>Höhe: <%= @picture.height || '–' %></li> <%# TODO px #%>
-    <li>Dateigröße: <%= @picture.filesize || '–' %></li> <%# TODO MB #%>
-    <li>Kameramodell: <%= @picture.camera || '–' %></li>
-    <li>Aufnahmeort: <%= @picture.location || '–' %></li>
-    <li>Belichtungszeit: <%= @picture.exposure_time || '–' %></li> <%# TODO s #%>
-    <li>Iso: <%= @picture.iso || '–' %></li>
-    <li>Blende: <%= @picture.aperture || '–' %></li>
-    <li>Brennweite: <%= @picture.focal_length || '–' %></li> <%# TODO mm #%>
-    <li>Farbtiefe: <%= @picture.color_depth || '–' %></li> <%# TODO Bit #%>
-    <li>Farbraum: <%= @picture.color_space || '–' %></li> <%# TODO decoden #%>
-    <li>Blitz: <%= @picture.has_flash.nil? ? '–' : (@picture.has_flash ? 'an' : 'aus') %></li>
-    <li>Gesichter: <%= text_field_tag 'picture[persons]',
-                                      @picture.persons_as_string %></li>
-    <li>Keywords: <%= text_field_tag 'picture[keywords]',
-                                     @picture.keywords_as_string %></li>
-    <li>Ordner: <%= select_tag 'picture[folder]',
-                                options_from_collection_for_select(
-                                  @user.folders,
-                                  'id',
-                                  'name',
-                                  @picture.folder.id # selected
-                                ) %></li>
-  </ul>
+    <ul class="form-horizontal list-picture-properties row-fluid">
+      <div class="span4">
+        <%=
+          out = content_tag(
+            :span,
+            @picture.title.html_safe,
+            :id => 'spanPictureTitle',
+            :class => 'content-picture-title'
+          )
+          out += text_field('picture', 'title', :class => 'input-picture-title')
+          out += link_to(
+            '<i class="icon icon-pencil"></i>'.html_safe,
+            '#',
+            :id    => "ediPicturetTitle",
+            :class => "btn btn-mini btn-edit-picture-title"
+          )
 
-<% end %>
+          list_horizontal_group('Titel', out.html_safe, 'picture-title-wrapper')
+        %>
+
+        
+        <%= list_horizontal_group('Breite', @picture.width.to_s + 'px') %><%# TODO px #%>
+        <%= list_horizontal_group('Höhe', @picture.height.to_s + 'px') %><%# TODO px #%>
+        <%= list_horizontal_group('Dateigröße', (@picture.filesize.to_f/1048576).round(3).to_s + ' MB') %> <%# TODO MB #%>
+        <%= list_horizontal_group('Kameramodell', @picture.camera.to_s) %>
+        <%= list_horizontal_group('Aufnahmeort', @picture.location.to_s) %>
+      </div>
+
+      <div class="span4">
+        <%= list_horizontal_group('Belichtungszeit', @picture.exposure_time.to_s) %> <%# TODO s #%>
+        <%= list_horizontal_group('ISO', @picture.iso.to_s) %>
+        <%= list_horizontal_group('Blende', @picture.aperture.to_s) %>
+        <%= list_horizontal_group('Brennweite', @picture.focal_length.to_s) %> <%# TODO mm #%>
+        <%= list_horizontal_group('Farbtiefe', @picture.color_depth.to_s) %> <%# TODO Bit #%>
+        <%= list_horizontal_group('Farbraum', @picture.color_space.to_s) %> <%# TODO decoden #%>
+        <%= list_horizontal_group('Blitz', @picture.has_flash.nil? ? '–' : (@picture.has_flash ? 'an' : 'aus')) %>
+      </div>
+
+      <div class="span4 metadata-by-user">
+        <%= list_horizontal_group('Gesichter', text_field_tag('picture[persons]', @picture.persons_as_string)) %>
+        <%= list_horizontal_group('Keywords', text_field_tag('picture[keywords]', @picture.keywords_as_string)) %>
+        <%= list_horizontal_group('Ordner', select_tag('picture[folder]',
+                                                    options_from_collection_for_select(
+                                                      @user.folders,
+                                                      'id',
+                                                      'name',
+                                                      @picture.folder.id # selected
+                                                    ))) %>
+      </div>
+    </ul>
+
+  <% end %>
+
+  <%= link_to 'zurück zur Galerie', :back, :class => 'btn btn-large btn-back-to-gallery' %>
+</div>
