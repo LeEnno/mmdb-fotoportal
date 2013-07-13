@@ -49,7 +49,8 @@ class Picture < ActiveRecord::Base
     self.height      = img.rows
     self.filesize    = img.filesize
     self.color_depth = img.depth
-
+    _save_color_means(img)
+    
     # exif
     if format == 'JPEG'
       exif_data = EXIFR::JPEG.new(image_path)
@@ -69,8 +70,6 @@ class Picture < ActiveRecord::Base
         self.has_flash    = !!exif_data.flash             if exif_data.respond_to?('flash')
       end
     end
-
-    # TODO color means by David
   end
 
 
@@ -142,6 +141,11 @@ class Picture < ActiveRecord::Base
     end
 
     filename + '.' + extension
+  end
+
+
+  def _save_color_means(img)
+    # TODO david stuff
   end
 
 
