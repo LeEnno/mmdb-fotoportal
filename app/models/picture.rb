@@ -170,8 +170,8 @@ class Picture < ActiveRecord::Base
           self.mean_black += 1
         elsif light >= 0.95 and sat <=0.10
           self.mean_white += 1
-        else
-          
+        elsif sat >= 0.25
+        
           case hue
             when 0..19, 335..360
               self.mean_red     += 1
