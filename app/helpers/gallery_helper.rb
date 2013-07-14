@@ -28,9 +28,10 @@ module GalleryHelper
 
     out = content_tag :i, nil, :class => 'icon-folder-' + (is_active ? 'open' : 'close')
 
-    folder_name = (folder.name || 'unbenannt') + " (#{folder.all_pictures.count})"
-    folder_link = is_root ? gallery_path : folder_path(:folder_id => folder.id)
-    out += link_to(folder_name, folder_link, :class => 'folder-link' + (is_active ? ' active' : ''), :id => "folder#{folder.id}", :'data-folder-id' => folder.id)
+    folder_name  = folder.name || 'unbenannt'
+    folder_name += '(' + content_tag(:span, "#{folder.all_pictures.count}", :class => 'folder-picture-count') + ')'
+    folder_link  = is_root ? gallery_path : folder_path(:folder_id => folder.id)
+    out += link_to(folder_name.html_safe, folder_link, :class => 'folder-link' + (is_active ? ' active' : ''), :id => "folder#{folder.id}", :'data-folder-id' => folder.id)
     out += link_to('+', new_folder_path(:parent_id => folder.id), :class => 'btn btn-mini btn-success folder-add')
     out += link_to('-', delete_folder_path(:folder_id => folder.id), :class => 'btn btn-mini btn-danger folder-remove') if !is_root
     

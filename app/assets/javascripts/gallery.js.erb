@@ -1,8 +1,19 @@
 $(function() {
 
+  // increase/decrease
+  var updatePictureCounters = function(parentIds, iterator) {
+    $.each(parentIds, function(index, val) {
+      var $picCount = $('#folder' + val).find('.folder-picture-count'),
+          oldCount  = parseInt($picCount.text());
+          newCount  = oldCount + iterator;
+      $picCount.text(newCount);
+    })
+  }
+
   // add Permalink to uploaded photo
-  $('.dropzone').on('dzUploadSuccess', '.dz-preview', function(e, permalink) {
-    $(this).append('<a href="' + permalink + '">Link</a>');
+  $('.dropzone').on('dzUploadSuccess', '.dz-preview', function(e, data) {
+    $(this).append('<a href="' + data.permalink + '">Link</a>');
+    updatePictureCounters(data.parents, 1);
   });
 
 
@@ -424,8 +435,9 @@ $(function() {
           var $searchCount = $('#searchResultsCount'),
               countBefore  = $searchCount.text();
           $searchCount.text(parseInt(countBefore) - 1);
+          
           $this.parent().remove();
-          // TODO decrease folder picture count (data.parents)
+          updatePictureCounters(data.parents, -1);
         }
       });
     });

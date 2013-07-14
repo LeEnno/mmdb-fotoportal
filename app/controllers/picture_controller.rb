@@ -16,7 +16,10 @@ class PictureController < ApplicationController
       @picture.save
     end
 
-    render :json => {:permalink => picture_url(:picture_id => @picture.id)}
+    render :json => {
+      :permalink => picture_url(:picture_id => @picture.id),
+      :parents   => @picture.folder.parent_ids
+    }
   end
 
 
@@ -117,7 +120,7 @@ class PictureController < ApplicationController
       redirect_to folder_url(:folder_id => @parents.last)
     else
       render :json => {
-        :parents => ('"' + @parents.join('", "') + '"')
+        :parents => @parents
       }
     end
   end

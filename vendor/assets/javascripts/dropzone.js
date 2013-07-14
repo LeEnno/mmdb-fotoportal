@@ -536,7 +536,7 @@ require.register("dropzone/lib/dropzone.js", function(exports, require, module){
       },
       sending: noop,
       success: function(file, responseText) {
-        $(file.previewElement).trigger('dzUploadSuccess', responseText.permalink);
+        $(file.previewElement).trigger('dzUploadSuccess', responseText);
         return file.previewElement.classList.add("dz-success");
       },
       complete: noop,
