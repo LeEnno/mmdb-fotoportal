@@ -102,6 +102,7 @@ class PictureController < ApplicationController
     @picture = Picture.find(params[:picture_id])
     @parents = @picture.folder.parent_ids
     
+    # delete keywords and persons that won't be used after image deletion
     keywords_to_delete = []
     persons_to_delete  = []
     @picture.keywords.each do |k|
@@ -111,13 +112,19 @@ class PictureController < ApplicationController
       persons_to_delete << p if p.pictures.count === 1
     end
     
+    # delete image
     @picture.destroy()
 
+    # clean keywords and persons that don't belong anywhere now
     keywords_to_delete.each{ |k| k.delete() }
     persons_to_delete.each{ |p| p.delete() }
 
+    # redirect to parent gallery if deletion was triggered on single-image page
     if params[:is_single].present?
-      redirect_to folder_url(:folder_id => @parents.last)
+      redirect_to folder_url(:folder_id => @parents.first)
+    
+    # return former parents (for image counter update on folders) if deletion
+    # was triggered from gallery page
     else
       render :json => {
         :parents => @parents
