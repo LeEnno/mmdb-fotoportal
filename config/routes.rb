@@ -19,4 +19,6 @@ MmdbFotoportal::Application.routes.draw do
   match '/pictures/faces_and_keywords' => 'gallery#load_faces_and_keywords', :as => :load_faces_and_keywords
   match '/:picture_id/edit' => 'picture#edit', :as => :edit_picture,
         :constraints => { :picture_id => /\d+/ }
+  match '/:picture_id/delete' => 'picture#delete', :as => :delete_picture,
+        :constraints => { :picture_id => /\d+/ }
 end

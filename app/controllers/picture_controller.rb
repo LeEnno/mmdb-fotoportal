@@ -92,4 +92,34 @@ class PictureController < ApplicationController
     }
   end
 
+  # DELETE PICTURE
+  # ------------------------------------------------------------------------------
+  # 
+  def delete
+    @picture = Picture.find(params[:picture_id])
+    @parents = @picture.folder.parent_ids
+    
+    keywords_to_delete = []
+    persons_to_delete  = []
+    @picture.keywords.each do |k|
+      keywords_to_delete << k if k.pictures.count === 1
+    end
+    @picture.persons.each do |p|
+      persons_to_delete << p if p.pictures.count === 1
+    end
+    
+    @picture.destroy()
+
+    keywords_to_delete.each{ |k| k.delete() }
+    persons_to_delete.each{ |p| p.delete() }
+
+    if params[:is_single].present?
+      redirect_to folder_url(:folder_id => @parents.last)
+    else
+      render :json => {
+        :parents => ('"' + @parents.join('", "') + '"')
+      }
+    end
+  end
+
 end

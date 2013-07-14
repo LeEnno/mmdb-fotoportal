@@ -8,7 +8,24 @@ class GalleryController < ApplicationController
     page     = params[:page].to_i
     offset   = (page - 1) * PICTURES_PER_PAGE
 
-    search_results  = _get_search_results
+    search_results = _get_search_results
+    if search_results.count < 1
+      search_results = _get_search_results(true)
+      
+      if search_results.count < 1
+        [:title, :location, :camera].each do |key|
+          if params[:search_params].has_key?(key)
+            suggestion = _get_synonym(params[:search_params][key])
+            if !suggestion.empty?
+              params[:search_params][key] = suggestion
+            end
+          end
+
+          break if (search_results = _get_search_results(true)).count > 0
+        end
+      end
+    end
+
     @all_pics_count = search_results.count
     @has_more       = @all_pics_count > offset + PICTURES_PER_PAGE
     @pictures       = search_results.offset(offset).limit(PICTURES_PER_PAGE)
@@ -94,7 +111,7 @@ class GalleryController < ApplicationController
   # PRIVATE METHODS
   # ------------------------------------------------------------------------------
   
-  def _get_search_results
+  def _get_search_results(use_like = false)
     join_tables   = []
     where_fields  = []
     where_values  = {}
@@ -137,8 +154,12 @@ class GalleryController < ApplicationController
 
       # like strings
       elsif key.in?('title', 'location', 'camera')
-        val = "%#{val}%"
-        where_fields << "#{key} LIKE :#{key}"
+        if use_like
+          val = "%#{val}%"
+          where_fields << "#{key} LIKE :#{key}"
+        else
+          where_fields << "MATCH (#{key}) AGAINST (:#{key})"
+        end
         where_values[key.to_sym] = val
 
       # relations
@@ -159,5 +180,15 @@ class GalleryController < ApplicationController
     # puts where_fields.join(' AND ')
     # puts where_values
     @user.pictures.joins(join_tables).where(where_fields.join(' AND '), where_values)
+  end
+
+
+  def _get_synonym(val)
+    # TODO fetch synonym/alternating search term
+    # if nothing is found return empty string
+    
+    # test only, overwrite when implementing!
+    return 'robe' if val == 'xx'
+    'iphone'
   end
 end

@@ -8,9 +8,15 @@ module GalleryHelper
   # 
   def image_previews_with_markup(pictures)
     pictures.map do |p|
-      link_to(image_tag(p.file_url('thumb')).html_safe,
-              picture_url(:picture_id => p.id),
-              :class => 'show-folder-image-preview').gsub(/"/, "'")
+      out = content_tag :div, :class => 'show-folder-image-preview-wrapper' do
+        link_to(image_tag(p.file_url('thumb')).html_safe,
+                picture_url(:picture_id => p.id),
+                :class => 'show-folder-image-preview').html_safe +
+        link_to('x',
+                delete_picture_path(:picture_id => p.id),
+                :class => 'btn btn-mini btn-danger btn-delete-picture').html_safe
+      end
+      out.gsub(/"/, "'")
     end
   end
 

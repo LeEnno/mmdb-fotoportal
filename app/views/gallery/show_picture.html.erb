@@ -1,5 +1,5 @@
 <div class="container">
-  <h1><%= @picture.title %></h1>
+  <h1 id="headingPictureTitle"><%= @picture.title %></h1>
 
   <%= form_tag edit_picture_path(:picture_id => @picture.id),
                :method => :post,
@@ -12,9 +12,13 @@
                            :user_id => @user.id,
                            :format  => :json
                          ) %>
-
+    
     <%= image_tag @picture.file_url('medium'),
                   :class => 'single-image' + (@picture.facedetect? ? ' do-facedetect' : '') %>
+
+    <%= link_to 'Bild löschen',
+                 delete_picture_path(:picture_id => @picture.id, :is_single => 1),
+                 :class => 'btn btn-mini btn-danger btn-delete-single-image' %>
 
     <ul class="form-horizontal list-picture-properties row-fluid">
       <div class="span4">
@@ -37,19 +41,19 @@
         %>
 
         
-        <%= list_horizontal_group('Breite', @picture.width.to_s + 'px') %><%# TODO px #%>
-        <%= list_horizontal_group('Höhe', @picture.height.to_s + 'px') %><%# TODO px #%>
-        <%= list_horizontal_group('Dateigröße', (@picture.filesize.to_f/1048576).round(3).to_s + ' MB') %> <%# TODO MB #%>
+        <%= list_horizontal_group('Breite', @picture.width.to_s + 'px') %>
+        <%= list_horizontal_group('Höhe', @picture.height.to_s + 'px') %>
+        <%= list_horizontal_group('Dateigröße', (@picture.filesize.to_f/1048576).round(3).to_s + ' MB') %>
         <%= list_horizontal_group('Kameramodell', @picture.camera.to_s) %>
         <%= list_horizontal_group('Aufnahmeort', @picture.location.to_s) %>
       </div>
 
       <div class="span4">
-        <%= list_horizontal_group('Belichtungszeit', @picture.exposure_time.to_s) %> <%# TODO s #%>
+        <%= list_horizontal_group('Belichtungszeit', @picture.exposure_time.present? ? @picture.exposure_time.to_s + 's' : '') %>
         <%= list_horizontal_group('ISO', @picture.iso.to_s) %>
         <%= list_horizontal_group('Blende', @picture.aperture.to_s) %>
-        <%= list_horizontal_group('Brennweite', @picture.focal_length.to_s) %> <%# TODO mm #%>
-        <%= list_horizontal_group('Farbtiefe', @picture.color_depth.to_s) %> <%# TODO Bit #%>
+        <%= list_horizontal_group('Brennweite', @picture.focal_length.present? ? @picture.focal_length.to_s + 'mm' : '') %>
+        <%= list_horizontal_group('Farbtiefe', @picture.color_depth.present? ? @picture.color_depth.to_s + ' Bit' : '') %>
         <%= list_horizontal_group('Farbraum', @picture.color_space.to_s) %> <%# TODO decoden #%>
         <%= list_horizontal_group('Blitz', @picture.has_flash.nil? ? '–' : (@picture.has_flash ? 'an' : 'aus')) %>
       </div>
@@ -69,5 +73,5 @@
 
   <% end %>
 
-  <%= link_to 'zurück zur Galerie', :back, :class => 'btn btn-large btn-back-to-gallery' %>
+  <%= link_to 'zurück zur Galerie', :back, :class => 'btn btn-primary btn-large btn-back-to-gallery' %>
 </div>

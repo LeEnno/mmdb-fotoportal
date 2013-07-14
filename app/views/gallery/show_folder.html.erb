@@ -32,7 +32,7 @@
 
       <h2>Bilder (<span id="searchResultsCount"><%= @all_pics_count %></span>)</h2>
 
-      <div id='show-folder-image-previews' class='show-folder-image-preview-wrapper clearfix' data-folder-id='<%= @folder.id %>'>
+      <div id='show-folder-image-previews' class='show-folder-image-preview-container clearfix' data-folder-id='<%= @folder.id %>'>
         <%= image_previews_with_markup(@pictures).join(' ').html_safe %>
       </div>
     </div> <%# /#tab-search #%>

@@ -410,6 +410,28 @@ $(function() {
 
 
 
+    /* DELETE IMAGE
+     * -----------------------------------------------------------------------------
+     */
+    $('.show-folder-image-preview-container').on('click', '.btn-delete-picture', function(e) {
+      e.preventDefault();
+
+      var $this = $(this);
+
+      $.ajax({
+        url: $this.attr('href'),
+        success: function(data) {
+          var $searchCount = $('#searchResultsCount'),
+              countBefore  = $searchCount.text();
+          $searchCount.text(parseInt(countBefore) - 1);
+          $this.parent().remove();
+          // TODO decrease folder picture count (data.parents)
+        }
+      });
+    });
+
+
+
     /* INFINITE SCROLL
      * ---------------------------------------------------------------------------
      */

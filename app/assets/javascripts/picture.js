@@ -111,11 +111,11 @@ $(function() {
       $titleSpan  = $('#spanPictureTitle'),
       $titleInput = $('#picture_title'),
       endEdit     = function() {
+        var newTitle = $titleInput.hide().val();
         $editBtn.removeClass('edit-mode-enabled');
         $pictureForm.submit();
-        $titleSpan.text(
-          $titleInput.hide().val()
-        ).show();
+        $titleSpan.text(newTitle).show();
+        $('#headingPictureTitle').text(newTitle);
       };
 
   // if edit-button is clicked hide span and show input

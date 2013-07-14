@@ -60,5 +60,10 @@
 
 /* IMAGES PREVIEWS */
 /* ------------------------------------------------------------------------ */
-.show-folder-image-preview-wrapper {max-width:600px;}
-.show-folder-image-preview {display:block; float:left; width:100px; height:100px; margin:10px;}
+.show-folder-image-preview-container {max-width:600px;}
+.show-folder-image-preview-wrapper {
+  position:relative; float:left; width:100px; height:100px; margin:10px;
+
+  &:hover .btn-delete-picture {display:block; position:absolute; top:-9px; right:-9px; border-radius:50%; height:19px; line-height:18px;}}
+.show-folder-image-preview {display:block; width:100px; height:100px;}
+.btn-delete-picture {display:none;}

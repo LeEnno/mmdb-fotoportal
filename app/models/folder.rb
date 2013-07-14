@@ -22,4 +22,11 @@ class Folder < ActiveRecord::Base
     end
     ids
   end
+
+
+  def parent_ids
+    ids = [id]
+    ids += self.parent.parent_ids if self.parent.present?
+    ids
+  end
 end
