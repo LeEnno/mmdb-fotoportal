@@ -8,7 +8,7 @@ class GalleryController < ApplicationController
     page     = params[:page].to_i
     offset   = (page - 1) * PICTURES_PER_PAGE
 
-    search_results  = get_search_results
+    search_results  = _get_search_results
     @all_pics_count = search_results.count
     @has_more       = @all_pics_count > offset + PICTURES_PER_PAGE
     @pictures       = search_results.offset(offset).limit(PICTURES_PER_PAGE)
@@ -94,7 +94,7 @@ class GalleryController < ApplicationController
   # PRIVATE METHODS
   # ------------------------------------------------------------------------------
   
-  def get_search_results
+  def _get_search_results
     join_tables   = []
     where_fields  = []
     where_values  = {}
@@ -154,10 +154,10 @@ class GalleryController < ApplicationController
     end
 
     # search results
-    puts "huhu"
-    puts join_tables
-    puts where_fields.join(' AND ')
-    puts where_values
+    # puts "huhu"
+    # puts join_tables
+    # puts where_fields.join(' AND ')
+    # puts where_values
     @user.pictures.joins(join_tables).where(where_fields.join(' AND '), where_values)
   end
 end

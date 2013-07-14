@@ -1,4 +1,4 @@
-module PhotoHelper
+module PictureHelper
 
   def list_horizontal_group(key, value, li_class = '')
     content_tag :li, :class => ['control-group', li_class].join(' ') do

@@ -1,6 +1,6 @@
 class UserController < ApplicationController
 
-  before_filter :redirect_if_authenticated, :only => [:login, :register]
+  before_filter :_redirect_if_authenticated, :only => [:login, :register]
   
 
   def login
@@ -14,7 +14,7 @@ class UserController < ApplicationController
     if @user.nil?
       flash[:error] = 'falsche Zugangsdaten'
     else
-      create_session_and_redirect
+      _create_session_and_redirect
     end
   end
 
@@ -26,7 +26,7 @@ class UserController < ApplicationController
     if @user.valid?
       @user.save
       Folder.create(:user => @user, :name => 'Alle Fotos')
-      create_session_and_redirect
+      _create_session_and_redirect
     end
   end
 
@@ -42,12 +42,12 @@ class UserController < ApplicationController
   # ------------------------------------------------------------------------------  
   private
 
-  def create_session_and_redirect
+  def _create_session_and_redirect
     session[:id] = Session.create(:user => @user).id
     redirect_to gallery_path
   end
 
-  def redirect_if_authenticated
+  def _redirect_if_authenticated
     redirect_to gallery_path if @is_logged_in
   end
 end

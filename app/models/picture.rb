@@ -51,7 +51,7 @@ class Picture < ActiveRecord::Base
     self.color_depth = img.depth
     _save_color_means(img)
     
-    # exif
+    # EXIF
     if format == 'JPEG'
       exif_data = EXIFR::JPEG.new(image_path)
       if exif_data.exif?
@@ -64,10 +64,10 @@ class Picture < ActiveRecord::Base
         self.longitude     = exif_data.gps.longitude      unless exif_data.gps.nil?
         # TODO location with Google-API
 
-        self.iso          = exif_data.iso_speed_ratings   if exif_data.respond_to?('iso_speed_ratings')
-        self.color_space  = exif_data.color_space.to_s    if exif_data.respond_to?('color_space')
-        self.focal_length = exif_data.focal_length.to_f   if exif_data.respond_to?('focal_length')
-        self.has_flash    = !!exif_data.flash             if exif_data.respond_to?('flash')
+        self.iso           = exif_data.iso_speed_ratings   if exif_data.respond_to?('iso_speed_ratings')
+        self.color_space   = exif_data.color_space.to_s    if exif_data.respond_to?('color_space')
+        self.focal_length  = exif_data.focal_length.to_f   if exif_data.respond_to?('focal_length')
+        self.has_flash     = !!exif_data.flash             if exif_data.respond_to?('flash')
       end
     end
   end
@@ -91,7 +91,7 @@ class Picture < ActiveRecord::Base
   # updated with metadata (like faces, folders or keywords) after creation.
   # 
   def facedetect?
-    self.persons.count === 0 && self.updated_at == self.created_at
+    self.updated_at == self.created_at && self.persons.count === 0
   end
 
 
@@ -156,14 +156,11 @@ class Picture < ActiveRecord::Base
     self.mean_white   = 0
     self.mean_black   = 0
     self.mean_brown   = 0
-    #self.mean_gray    = 0
 
     for x in 1..self.width
       for y in 1..self.height
-        pixels = img.get_pixels(x-1,y-1,1,1)
-        pix    = pixels[0]
-        
-        hsl_pix = pix.to_hsla
+        pixel   = img.get_pixels(x-1,y-1,1,1)[0]
+        hsl_pix = pixel.to_hsla
         hue     = hsl_pix[0]
         sat     = hsl_pix[1]/255
         light   = hsl_pix[2]/255
@@ -172,49 +169,46 @@ class Picture < ActiveRecord::Base
           self.mean_black += 1
         elsif light >= 0.95 and sat <=0.10
           self.mean_white += 1
-        #elsif light >= 0.25 and light <= 0.75 and sat <=0.30
-          #self.mean_gray += 1
         else
           
           case hue
-          when 0..19
-            self.mean_red     += 1
-          when 20..40
-            self.mean_orange  += 1
-          when 41..85
-            self.mean_yellow  += 1
-          when 95..145
-            self.mean_green   += 1
-          when 155..205
-            self.mean_cyan    += 1
-          when 215..265
-            self.mean_blue    += 1
-          when 275..295
-            self.mean_violet  += 1
-          when 296..320
-            self.mean_magenta += 1
-          when 335..360
-            self.mean_red     += 1
-          end
-          
-        end
+            when 0..19, 335..360
+              self.mean_red     += 1
+            when 20..40
+              self.mean_orange  += 1
+            when 41..85
+              self.mean_yellow  += 1
+            when 95..145
+              self.mean_green   += 1
+            when 155..205
+              self.mean_cyan    += 1
+            when 215..265
+              self.mean_blue    += 1
+            when 275..295
+              self.mean_violet  += 1
+            when 296..320
+              self.mean_magenta += 1
+          end # end case
+        end # end if
+      end # end for y
+    end # end for x
 
-      end
-    end
+    amount_pixels     = self.width * self.height
+    self.mean_red     = _as_percent(self.mean_red,     amount_pixels)
+    self.mean_yellow  = _as_percent(self.mean_yellow,  amount_pixels)
+    self.mean_orange  = _as_percent(self.mean_orange,  amount_pixels)
+    self.mean_green   = _as_percent(self.mean_green,   amount_pixels)
+    self.mean_cyan    = _as_percent(self.mean_cyan,    amount_pixels)
+    self.mean_blue    = _as_percent(self.mean_blue,    amount_pixels)
+    self.mean_violet  = _as_percent(self.mean_violet,  amount_pixels)
+    self.mean_magenta = _as_percent(self.mean_magenta, amount_pixels)
+    self.mean_black   = _as_percent(self.mean_black,   amount_pixels)
+    self.mean_white   = _as_percent(self.mean_white,   amount_pixels)
+  end
 
-    amount_pixels = img.columns*img.rows
 
-    self.mean_red     = (self.mean_red.to_f/amount_pixels).round(2)*100
-    self.mean_yellow  = (self.mean_yellow.to_f/amount_pixels).round(2)*100
-    self.mean_orange  = (self.mean_orange.to_f/amount_pixels).round(2)*100
-    self.mean_green   = (self.mean_green.to_f/amount_pixels).round(2)*100
-    self.mean_cyan    = (self.mean_cyan.to_f/amount_pixels).round(2)*100
-    self.mean_blue    = (self.mean_blue.to_f/amount_pixels).round(2)*100
-    self.mean_violet  = (self.mean_violet.to_f/amount_pixels).round(2)*100
-    self.mean_magenta = (self.mean_magenta.to_f/amount_pixels).round(2)*100
-    self.mean_black   = (self.mean_black.to_f/amount_pixels).round(2)*100
-    self.mean_white   = (self.mean_white.to_f/amount_pixels).round(2)*100
-    #self.mean_gray    = (self.mean_gray.to_f/amount_pixels).round(2)*100
+  def _as_percent(mean, amount_pixels)
+    ((mean.to_f/amount_pixels).round(2) * 100).to_i
   end
 
 

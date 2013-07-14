@@ -91,4 +91,5 @@ class PictureController < ApplicationController
       :persons => @picture.persons_as_string
     }
   end
+
 end

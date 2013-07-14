@@ -1,7 +1,7 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery
 
-  before_filter :set_login_status
+  before_filter :_set_login_status
 
 
   def redirect_if_not_authenticated
@@ -13,7 +13,7 @@ class ApplicationController < ActionController::Base
 
 
   private
-  def set_login_status
+  def _set_login_status
     if @is_logged_in.nil?
       @is_logged_in = false
 
