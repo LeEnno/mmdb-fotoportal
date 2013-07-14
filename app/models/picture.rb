@@ -180,7 +180,7 @@ class Picture < ActiveRecord::Base
           when 0..19
             self.mean_red     += 1
           when 20..40
-  			    self.mean_orange  += 1
+            self.mean_orange  += 1
           when 41..85
             self.mean_yellow  += 1
           when 95..145
