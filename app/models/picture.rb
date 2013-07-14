@@ -63,6 +63,7 @@ class Picture < ActiveRecord::Base
         self.latitude      = exif_data.gps.latitude       unless exif_data.gps.nil?
         self.longitude     = exif_data.gps.longitude      unless exif_data.gps.nil?
         # TODO location with Google-API
+        self.location      = _fetch_location
 
         self.iso           = exif_data.iso_speed_ratings   if exif_data.respond_to?('iso_speed_ratings')
         self.color_space   = exif_data.color_space.to_s    if exif_data.respond_to?('color_space')
@@ -209,6 +210,14 @@ class Picture < ActiveRecord::Base
 
   def _as_percent(mean, amount_pixels)
     ((mean.to_f/amount_pixels).round(2) * 100).to_i
+  end
+
+
+  def _fetch_location
+    if self.latitude.present? && self.longitude.present?
+      # TODO send Google-API call, parse JSON into some Ruby-thing, read string with most information
+      # TODO save result (string) like `self.location = result`
+    end
   end
 
 
