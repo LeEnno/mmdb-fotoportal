@@ -145,7 +145,76 @@ class Picture < ActiveRecord::Base
 
 
   def _save_color_means(img)
-    # TODO david stuff
+    self.mean_red     = 0
+    self.mean_yellow  = 0
+    self.mean_orange  = 0
+    self.mean_green   = 0
+    self.mean_cyan    = 0
+    self.mean_blue    = 0
+    self.mean_violet  = 0
+    self.mean_magenta = 0
+    self.mean_white   = 0
+    self.mean_black   = 0
+    self.mean_brown   = 0
+    #self.mean_gray    = 0
+
+    for x in 1..self.width
+      for y in 1..self.height
+        pixels = img.get_pixels(x-1,y-1,1,1)
+        pix    = pixels[0]
+        
+        hsl_pix = pix.to_hsla
+        hue     = hsl_pix[0]
+        sat     = hsl_pix[1]/255
+        light   = hsl_pix[2]/255
+        
+        if light <= 0.10
+          self.mean_black += 1
+        elsif light >= 0.95 and sat <=0.10
+          self.mean_white += 1
+        #elsif light >= 0.25 and light <= 0.75 and sat <=0.30
+          #self.mean_gray += 1
+        else
+          
+          case hue
+          when 0..19
+            self.mean_red     += 1
+          when 20..40
+  			    self.mean_orange  += 1
+          when 41..85
+            self.mean_yellow  += 1
+          when 95..145
+            self.mean_green   += 1
+          when 155..205
+            self.mean_cyan    += 1
+          when 215..265
+            self.mean_blue    += 1
+          when 275..295
+            self.mean_violet  += 1
+          when 296..320
+            self.mean_magenta += 1
+          when 335..360
+            self.mean_red     += 1
+          end
+          
+        end
+
+      end
+    end
+
+    amount_pixels = img.columns*img.rows
+
+    self.mean_red     = (self.mean_red.to_f/amount_pixels).round(2)*100
+    self.mean_yellow  = (self.mean_yellow.to_f/amount_pixels).round(2)*100
+    self.mean_orange  = (self.mean_orange.to_f/amount_pixels).round(2)*100
+    self.mean_green   = (self.mean_green.to_f/amount_pixels).round(2)*100
+    self.mean_cyan    = (self.mean_cyan.to_f/amount_pixels).round(2)*100
+    self.mean_blue    = (self.mean_blue.to_f/amount_pixels).round(2)*100
+    self.mean_violet  = (self.mean_violet.to_f/amount_pixels).round(2)*100
+    self.mean_magenta = (self.mean_magenta.to_f/amount_pixels).round(2)*100
+    self.mean_black   = (self.mean_black.to_f/amount_pixels).round(2)*100
+    self.mean_white   = (self.mean_white.to_f/amount_pixels).round(2)*100
+    #self.mean_gray    = (self.mean_gray.to_f/amount_pixels).round(2)*100
   end
 
 
