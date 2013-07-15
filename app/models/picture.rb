@@ -12,7 +12,7 @@ class Picture < ActiveRecord::Base
   # should semantically be `belongs_to`, but `:through` wouldn't work
   has_one :user, :through => :folder
 
-  after_initialize :_set_location_fields, :if => :new_record?
+  after_initialize :_set_path_fields, :if => :new_record?
   after_create     :_make_scales
 
 
@@ -61,7 +61,6 @@ class Picture < ActiveRecord::Base
 
         self.latitude      = exif_data.gps.latitude       unless exif_data.gps.nil?
         self.longitude     = exif_data.gps.longitude      unless exif_data.gps.nil?
-        # TODO location with Google-API
         self.location      = _fetch_location
 
         self.iso           = exif_data.iso_speed_ratings   if exif_data.respond_to?('iso_speed_ratings')
@@ -174,7 +173,7 @@ class Picture < ActiveRecord::Base
   # ----------------------------------------------------------------------------
   private
 
-  def _set_location_fields
+  def _set_path_fields
     # set hash in db
     require 'digest/md5'
     begin

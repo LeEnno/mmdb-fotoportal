@@ -51,7 +51,7 @@ class PictureController < ApplicationController
       else
         # not only delete from join-table but also from persons-table itself if
         # it doesn't belong to any other pictures
-        p.delete if p.pictures.count == 1
+        p.destroy if p.pictures.count == 1
         true
       end
     end
@@ -73,7 +73,7 @@ class PictureController < ApplicationController
       else
         # not only delete from join-table but also from keywords-table itself if
         # it doesn't belong to any other pictures
-        k.delete if k.pictures.count == 1
+        k.destroy if k.pictures.count == 1
         true
       end
     end
@@ -92,7 +92,8 @@ class PictureController < ApplicationController
     # Same applies to the folder.
     # 
     render :json => {
-      :persons => @picture.persons_as_string
+      :persons  => @picture.persons_as_string,
+      :keywords => @picture.keywords_as_string
     }
   end
 

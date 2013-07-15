@@ -75,6 +75,7 @@ $(function() {
 
     // set faces input to returned value
     $('#picture_persons').val(data.persons);
+    $('#picture_keywords').val(data.keywords);
 
     // if user typed a person's name, remove input and the detected area
     $('.input-face-detection').each(function(i, el) {
