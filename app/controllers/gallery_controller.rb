@@ -9,19 +9,27 @@ class GalleryController < ApplicationController
     offset   = (page - 1) * PICTURES_PER_PAGE
 
     search_results = _get_search_results
+    
+    # nothing found? try LIKE-search instead of FULLTEXT
     if search_results.count < 1
       search_results = _get_search_results(true)
       
+      # nothing found? try similar words if possible
       if search_results.count < 1
-        [:title, :location, :camera].each do |key|
+        [:title, :location, :camera, :keywords].each do |key|
+          has_results = false
+
           if params[:search_params].has_key?(key)
-            suggestion = _get_synonym(params[:search_params][key])
-            if !suggestion.empty?
-              params[:search_params][key] = suggestion
+            suggestions = _get_similar_words(params[:search_params][key])
+
+            # search with each similar word, until we find something
+            suggestions.each do |s|
+              params[:search_params][key] = s
+              break if has_results = (search_results = _get_search_results(true)).count > 0
             end
           end
 
-          break if (search_results = _get_search_results(true)).count > 0
+          break if has_results || (search_results = _get_search_results(true)).count > 0
         end
       end
     end
@@ -189,17 +197,17 @@ class GalleryController < ApplicationController
   end
 
 
-  def _get_synonym(val)
+  # finds synonyms and similar items
+  def _get_similar_words(val)
     require 'net/http'
     require 'json'
     
-    url = "http://www.openthesaurus.de/synonyme/search?q=" + val + "&format=application/json&similar=true"
+    url    = "http://www.openthesaurus.de/synonyme/search?q=" + val + "&format=application/json&similar=true"
     result = Net::HTTP.get(URI.parse(url))
+    jdoc   = JSON.parse(result)
     
-    jdoc = JSON.parse(result)
-    synonym = jdoc.fetch("similarterms").fetch(0)
-    return synonym.values_at("term")
-    
-    # TODO if nothing is found return empty string    
+    found_words = []
+    found_words += jdoc.fetch('synsets').fetch(0).fetch('terms').map{ |term_hash| term_hash['term'] } if jdoc.has_key?('synsets') && !jdoc.fetch('synsets').empty?
+    found_words += jdoc.fetch('similarterms').map{ |term_hash| term_hash['term'] } if jdoc.has_key?('similarterms')
   end
 end
