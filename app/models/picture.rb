@@ -218,7 +218,7 @@ class Picture < ActiveRecord::Base
       require 'net/http'
       require 'json'
       
-      url = "http://maps.googleapis.com/maps/api/geocode/json?latlng="+self.latitude.to_s+","+self.longitude.to_s+"&sensor=false"
+      url = "http://maps.googleapis.com/maps/api/geocode/json?latlng="+self.latitude.to_s+","+self.longitude.to_s+"&sensor=false&language=de"
       result = Net::HTTP.get(URI.parse(url))
       
       response = JSON.parse(result)
