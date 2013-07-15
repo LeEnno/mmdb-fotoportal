@@ -184,11 +184,16 @@ class GalleryController < ApplicationController
 
 
   def _get_synonym(val)
-    # TODO fetch synonym/alternating search term
-    # if nothing is found return empty string
+    require 'net/http'
+    require 'json'
     
-    # test only, overwrite when implementing!
-    return 'robe' if val == 'xx'
-    'iphone'
+    url = "http://www.openthesaurus.de/synonyme/search?q=" + val + "&format=application/json&similar=true"
+    result = Net::HTTP.get(URI.parse(url))
+    
+    jdoc = JSON.parse(result)
+    synonym = jdoc.fetch("similarterms").fetch(0)
+    return synonym.values_at("term")
+    
+    # TODO if nothing is found return empty string    
   end
 end
