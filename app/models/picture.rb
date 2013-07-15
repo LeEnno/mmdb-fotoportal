@@ -236,14 +236,24 @@ class Picture < ActiveRecord::Base
       results = response.fetch("results")
       
       locationString = "";
+      tempAddress = "";
       for i in 1..results.size
         formatted_address = results.fetch(i-1).fetch("formatted_address")
         pos = formatted_address.index(',')
         if pos.nil?
-          locationString = locationString + " " + formatted_address
+          tempAddress = formatted_address;
         else
-          locationString = locationString + " " + formatted_address[0, pos]
+          tempAddress = formatted_address[0, pos];
         end # end if
+        
+        while tempAddress.include? " " do
+          pos2 = tempAddress.index(' ')
+          tempString = tempAddress[0, pos2]
+          locationString = locationString + " " + tempString unless locationString.include? tempString
+          tempAddress = tempAddress[pos2+1, tempAddress.size]
+        end
+        
+        locationString = locationString + " " + tempAddress unless locationString.include? tempAddress        
       end # end for
       
       self.location = locationString
