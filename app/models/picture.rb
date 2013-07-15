@@ -1,5 +1,5 @@
 class Picture < ActiveRecord::Base
-  attr_accessible :aperture, :camera, :color_depth, :color_space, :exposure_time, :filename, :filesize, :focal_length, :folder, :has_flash, :height, :iso, :latitude, :location, :longitude, :mean_black, :mean_blue, :mean_brown, :mean_cyan, :mean_green, :mean_magenta, :mean_orange, :mean_red, :mean_violet, :mean_white, :mean_yellow, :path_hash, :taken_at, :title, :width
+  attr_accessible :aperture, :camera, :color_depth, :color_space, :exposure_time, :filename, :filesize, :focal_length, :folder, :has_flash, :height, :iso, :latitude, :location, :longitude, :mean_black, :mean_blue, :mean_cyan, :mean_green, :mean_magenta, :mean_orange, :mean_red, :mean_violet, :mean_white, :mean_yellow, :path_hash, :taken_at, :title, :width
 
   belongs_to :folder
   has_many :appearances, :dependent => :destroy
@@ -49,7 +49,6 @@ class Picture < ActiveRecord::Base
     self.height      = img.rows
     self.filesize    = img.filesize
     self.color_depth = img.depth
-    _save_color_means(img)
     
     # EXIF
     if format == 'JPEG'
@@ -94,6 +93,81 @@ class Picture < ActiveRecord::Base
   def facedetect?
     self.updated_at == self.created_at && self.persons.count === 0
   end
+
+
+  # walk through each pixel and save color means
+  # 
+  # We use the medium scale for better performance.
+  # 
+  def save_color_means
+    require 'RMagick'
+    img = Magick::Image::read(file_path('medium').to_s).first
+
+    self.mean_red     = 0
+    self.mean_yellow  = 0
+    self.mean_orange  = 0
+    self.mean_green   = 0
+    self.mean_cyan    = 0
+    self.mean_blue    = 0
+    self.mean_violet  = 0
+    self.mean_magenta = 0
+    self.mean_white   = 0
+    self.mean_black   = 0
+
+    # walk through each pixel
+    for x in 1..img.columns
+      for y in 1..img.rows
+        pixel   = img.get_pixels(x-1,y-1,1,1)[0]
+        hsl_pix = pixel.to_hsla
+        hue     = hsl_pix[0]
+        sat     = hsl_pix[1]/255
+        light   = hsl_pix[2]/255
+        
+        # black and white
+        if light <= 0.10
+          self.mean_black += 1
+        elsif light >= 0.95 and sat <= 0.10
+          self.mean_white += 1
+        elsif sat >= 0.25
+          
+          # colors
+          case hue
+            when 0..19, 335..360
+              self.mean_red     += 1
+            when 20..40
+              self.mean_orange  += 1
+            when 41..85
+              self.mean_yellow  += 1
+            when 95..145
+              self.mean_green   += 1
+            when 155..205
+              self.mean_cyan    += 1
+            when 215..265
+              self.mean_blue    += 1
+            when 275..295
+              self.mean_violet  += 1
+            when 296..320
+              self.mean_magenta += 1
+          end # end case
+        end # end if
+      end # end for y
+    end # end for x
+
+    # make percentages
+    amount_pixels     = img.columns * img.rows
+    self.mean_red     = _as_percent(self.mean_red,     amount_pixels)
+    self.mean_yellow  = _as_percent(self.mean_yellow,  amount_pixels)
+    self.mean_orange  = _as_percent(self.mean_orange,  amount_pixels)
+    self.mean_green   = _as_percent(self.mean_green,   amount_pixels)
+    self.mean_cyan    = _as_percent(self.mean_cyan,    amount_pixels)
+    self.mean_blue    = _as_percent(self.mean_blue,    amount_pixels)
+    self.mean_violet  = _as_percent(self.mean_violet,  amount_pixels)
+    self.mean_magenta = _as_percent(self.mean_magenta, amount_pixels)
+    self.mean_black   = _as_percent(self.mean_black,   amount_pixels)
+    self.mean_white   = _as_percent(self.mean_white,   amount_pixels)
+    save
+  end
+  handle_asynchronously :save_color_means
 
 
   # PRIVATE METHODS
@@ -145,72 +219,10 @@ class Picture < ActiveRecord::Base
   end
 
 
-  def _save_color_means(img)
-    self.mean_red     = 0
-    self.mean_yellow  = 0
-    self.mean_orange  = 0
-    self.mean_green   = 0
-    self.mean_cyan    = 0
-    self.mean_blue    = 0
-    self.mean_violet  = 0
-    self.mean_magenta = 0
-    self.mean_white   = 0
-    self.mean_black   = 0
-    self.mean_brown   = 0
-
-    for x in 1..self.width
-      for y in 1..self.height
-        pixel   = img.get_pixels(x-1,y-1,1,1)[0]
-        hsl_pix = pixel.to_hsla
-        hue     = hsl_pix[0]
-        sat     = hsl_pix[1]/255
-        light   = hsl_pix[2]/255
-        
-        if light <= 0.10
-          self.mean_black += 1
-        elsif light >= 0.95 and sat <=0.10
-          self.mean_white += 1
-        elsif sat >= 0.25
-        
-          case hue
-            when 0..19, 335..360
-              self.mean_red     += 1
-            when 20..40
-              self.mean_orange  += 1
-            when 41..85
-              self.mean_yellow  += 1
-            when 95..145
-              self.mean_green   += 1
-            when 155..205
-              self.mean_cyan    += 1
-            when 215..265
-              self.mean_blue    += 1
-            when 275..295
-              self.mean_violet  += 1
-            when 296..320
-              self.mean_magenta += 1
-          end # end case
-        end # end if
-      end # end for y
-    end # end for x
-
-    amount_pixels     = self.width * self.height
-    self.mean_red     = _as_percent(self.mean_red,     amount_pixels)
-    self.mean_yellow  = _as_percent(self.mean_yellow,  amount_pixels)
-    self.mean_orange  = _as_percent(self.mean_orange,  amount_pixels)
-    self.mean_green   = _as_percent(self.mean_green,   amount_pixels)
-    self.mean_cyan    = _as_percent(self.mean_cyan,    amount_pixels)
-    self.mean_blue    = _as_percent(self.mean_blue,    amount_pixels)
-    self.mean_violet  = _as_percent(self.mean_violet,  amount_pixels)
-    self.mean_magenta = _as_percent(self.mean_magenta, amount_pixels)
-    self.mean_black   = _as_percent(self.mean_black,   amount_pixels)
-    self.mean_white   = _as_percent(self.mean_white,   amount_pixels)
-  end
-
-
   def _as_percent(mean, amount_pixels)
     ((mean.to_f/amount_pixels).round(2) * 100).to_i
   end
+
 
 
   def _fetch_location

@@ -14,6 +14,7 @@ class PictureController < ApplicationController
       @picture.extract_metadata
       @picture.folder = Folder.find(params[:folder][:id])
       @picture.save
+      @picture.save_color_means # will be executed as delayed_job
     end
 
     render :json => {

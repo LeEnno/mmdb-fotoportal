@@ -23,6 +23,8 @@ gem 'jquery-rails'
 gem 'exifr'
 gem 'rmagick'
 
+gem 'delayed_job_active_record'
+
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'
 

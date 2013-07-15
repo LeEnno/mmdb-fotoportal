@@ -11,14 +11,31 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130625104928) do
+ActiveRecord::Schema.define(:version => 20130715134009) do
 
   create_table "appearances", :force => true do |t|
     t.integer "picture_id", :null => false
     t.integer "person_id",  :null => false
   end
 
+  add_index "appearances", ["person_id"], :name => "person_id"
   add_index "appearances", ["picture_id", "person_id"], :name => "index_appearances_on_picture_id_and_person_id"
+
+  create_table "delayed_jobs", :force => true do |t|
+    t.integer  "priority",   :default => 0
+    t.integer  "attempts",   :default => 0
+    t.text     "handler"
+    t.text     "last_error"
+    t.datetime "run_at"
+    t.datetime "locked_at"
+    t.datetime "failed_at"
+    t.string   "locked_by"
+    t.string   "queue"
+    t.datetime "created_at",                :null => false
+    t.datetime "updated_at",                :null => false
+  end
+
+  add_index "delayed_jobs", ["priority", "run_at"], :name => "delayed_jobs_priority"
 
   create_table "folders", :force => true do |t|
     t.string   "name"
@@ -42,6 +59,7 @@ ActiveRecord::Schema.define(:version => 20130625104928) do
     t.integer "keyword_id", :null => false
   end
 
+  add_index "keywords_pictures", ["keyword_id"], :name => "keyword_id"
   add_index "keywords_pictures", ["picture_id", "keyword_id"], :name => "index_pictures_keywords_on_picture_id_and_keyword_id"
 
   create_table "persons", :force => true do |t|
@@ -85,7 +103,10 @@ ActiveRecord::Schema.define(:version => 20130625104928) do
     t.string   "extension"
   end
 
+  add_index "pictures", ["camera"], :name => "fulltext_camera"
   add_index "pictures", ["folder_id"], :name => "index_pictures_on_folder_id"
+  add_index "pictures", ["location"], :name => "fulltext_location"
+  add_index "pictures", ["title"], :name => "fulltext_title"
 
   create_table "sessions", :force => true do |t|
     t.datetime "expires_at"
