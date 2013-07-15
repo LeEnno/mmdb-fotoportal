@@ -165,9 +165,15 @@ class GalleryController < ApplicationController
       # relations
       elsif key.in?('keywords', 'persons')
         join_tables << key.to_sym
-        where_fields << "#{key}.name = :#{key}"
+        if use_like
+          val = "%#{val}%"
+          where_fields << "#{key}.name LIKE :#{key}"
+        else
+          where_fields << "MATCH (#{key}.name) AGAINST (:#{key})"
+        end
         where_values[key.to_sym] = val
 
+      # folder
       elsif key == 'folder_id'
         where_fields << "#{key} IN (:#{key})"
         where_values[key.to_sym] = Folder.find(val).children_ids
