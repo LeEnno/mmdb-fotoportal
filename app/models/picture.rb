@@ -64,7 +64,7 @@ class Picture < ActiveRecord::Base
         self.location      = _fetch_location
 
         self.iso           = exif_data.iso_speed_ratings   if exif_data.respond_to?('iso_speed_ratings')
-        self.color_space   = exif_data.color_space.to_s    if exif_data.respond_to?('color_space')
+        self.color_space   = exif_data.color_space         if exif_data.respond_to?('color_space')
         self.focal_length  = exif_data.focal_length.to_f   if exif_data.respond_to?('focal_length')
         self.has_flash     = !!exif_data.flash             if exif_data.respond_to?('flash')
       end

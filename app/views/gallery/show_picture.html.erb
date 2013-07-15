@@ -54,7 +54,7 @@
         <%= list_horizontal_group('Blende', @picture.aperture.to_s) %>
         <%= list_horizontal_group('Brennweite', @picture.focal_length.present? ? @picture.focal_length.to_s + 'mm' : '') %>
         <%= list_horizontal_group('Farbtiefe', @picture.color_depth.present? ? @picture.color_depth.to_s + ' Bit' : '') %>
-        <%= list_horizontal_group('Farbraum', @picture.color_space.to_s) %> <%# TODO decoden #%>
+        <%= list_horizontal_group('Farbraum', @picture.color_space.present? && @picture.color_space == '1' ? 'sRGB' : '') %>
         <%= list_horizontal_group('Blitz', @picture.has_flash.nil? ? '–' : (@picture.has_flash ? 'an' : 'aus')) %>
       </div>
 
