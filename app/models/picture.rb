@@ -215,10 +215,29 @@ class Picture < ActiveRecord::Base
 
   def _fetch_location
     if self.latitude.present? && self.longitude.present?
-      # TODO send Google-API call, parse JSON into some Ruby-thing, read string with most information
-      # TODO save result (string) like `self.location = result`
-    end
-  end
+      require 'net/http'
+      require 'json'
+      
+      url = "http://maps.googleapis.com/maps/api/geocode/json?latlng="+self.latitude.to_s+","+self.longitude.to_s+"&sensor=false"
+      result = Net::HTTP.get(URI.parse(url))
+      
+      response = JSON.parse(result)
+      results = response.fetch("results")
+      
+      locationString = "";
+      for i in 1..results.size
+        formatted_address = results.fetch(i-1).fetch("formatted_address")
+        pos = formatted_address.index(',')
+        if pos.nil?
+          locationString = locationString + " " + formatted_address
+        else
+          locationString = locationString + " " + formatted_address[0, pos]
+        end # end if
+      end # end for
+      
+      self.location = locationString
+    end # end if
+  end # end def
 
 
   def _make_scales
