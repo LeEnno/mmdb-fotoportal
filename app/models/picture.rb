@@ -137,11 +137,11 @@ class Picture < ActiveRecord::Base
               self.mean_orange  += 1
             when 41..85
               self.mean_yellow  += 1
-            when 95..145
+            when 85..155
               self.mean_green   += 1
             when 155..205
               self.mean_cyan    += 1
-            when 215..265
+            when 205..265
               self.mean_blue    += 1
             when 275..295
               self.mean_violet  += 1

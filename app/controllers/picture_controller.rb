@@ -97,6 +97,7 @@ class PictureController < ApplicationController
     }
   end
 
+
   # DELETE PICTURE
   # ------------------------------------------------------------------------------
   # 

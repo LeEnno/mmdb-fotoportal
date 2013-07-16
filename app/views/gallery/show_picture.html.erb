@@ -46,6 +46,7 @@
         <%= list_horizontal_group('Dateigröße', (@picture.filesize.to_f/1048576).round(3).to_s + ' MB') %>
         <%= list_horizontal_group('Kameramodell', @picture.camera.to_s) %>
         <%= list_horizontal_group('Aufnahmeort', @picture.location.to_s) %>
+        <%= list_horizontal_group('Aufnahmedatum', @picture.taken_at.to_s) %>
       </div>
 
       <div class="span4">
