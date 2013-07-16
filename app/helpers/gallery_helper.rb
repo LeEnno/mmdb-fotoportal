@@ -21,7 +21,7 @@ module GalleryHelper
   end
 
 
-  # Render markup for folder children
+  # Render markup for folder children.
   # 
   def folder_as_tree(folder, active_folder, is_root = false)
     is_active = folder == active_folder
@@ -51,5 +51,17 @@ module GalleryHelper
       }
     end
     content_tag :ul, out.html_safe, (ul_options || {})
+  end
+
+
+  # Make list item with label and value.
+  # 
+  def list_horizontal_group(key, value, li_class = '')
+    content_tag :li, :class => ['control-group', li_class].join(' ') do
+      out = label_tag(nil, key, :class => 'control-label')
+      out += content_tag(:div, :class => 'controls') do
+        value
+      end
+    end
   end
 end

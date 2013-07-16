@@ -62,8 +62,12 @@
 /* ------------------------------------------------------------------------ */
 .show-folder-image-preview-container {max-width:600px;}
 .show-folder-image-preview-wrapper {
-  position:relative; float:left; width:100px; height:100px; margin:10px;
+  position:relative; float:left; width:100px; height:100px; padding:10px;
 
-  &:hover .btn-delete-picture {display:block; position:absolute; top:-9px; right:-9px; border-radius:50%; height:19px; line-height:18px;}}
-.show-folder-image-preview {display:block; width:100px; height:100px;}
+  &:hover .btn-delete-picture {display:block; position:absolute; top:0; right:0; border-radius:50%; height:19px; line-height:18px;}
+  &:hover .show-folder-image-preview {box-shadow:0 0 12px 2px rgba(82, 168, 236, 0.6);}
+}
+.show-folder-image-preview {
+  display:block; width:100px; height:100px;
+}
 .btn-delete-picture {display:none;}
