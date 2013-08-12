@@ -96,12 +96,11 @@ class GalleryController < ApplicationController
     persons  = []
     keywords = []
 
-    # iterate over children folder and store keywords * persons
+    # iterate over children folder and store keywords + persons
     f.children.each do |child|
       child.pictures.each do |p|
         p.keywords.each { |k| keywords << k if !k.in?(keywords) }
         p.persons.each { |ps| persons << ps if !ps.in?(persons) }
-        #p.delete
       end
       child.destroy
     end
