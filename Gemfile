@@ -25,6 +25,12 @@ gem 'rmagick'
 
 gem 'delayed_job_active_record'
 
+group :development do
+  gem 'guard-livereload', :require => false
+  gem 'rack-livereload'
+  gem 'rb-fsevent',       :require => false
+end
+
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'
 

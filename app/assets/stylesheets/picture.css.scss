@@ -11,7 +11,7 @@
   .controls {margin-left:140px;}
 }
 
-.content-picture-title {word-wrap: break-word;}
+.content-picture-title {word-wrap: break-word; margin-bottom:30px;}
 .btn-edit-picture-title {display:none; margin-left:4px;}
 input.input-picture-title {display:none; width:144px; margin-bottom:4px;} // be that specific to overwrite bootstrap defaults
 .picture-title-wrapper:hover .btn-edit-picture-title {display:inline-block;}
